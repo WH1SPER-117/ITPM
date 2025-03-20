@@ -1,1 +1,15 @@
-//this is home page: import header footer here
+import React from 'react'
+import Nav from '../Nav/Nav'
+
+
+
+function home() {
+  return (
+    <div>
+        <Nav />
+        <h1>Home Page</h1>
+    </div>
+  )
+}
+
+export default home

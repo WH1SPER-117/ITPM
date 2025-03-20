@@ -1,11 +1,12 @@
 //import logo from './logo.svg';
 import './App.css';
+import Home from './Components/Home/Home';
 
 function App() {
   return (
     <div className="App">
       <div>
-      <h1 className='text-6xl text-red-500'>test</h1>
+        <Home></Home>
       </div>
     </div>
   );
