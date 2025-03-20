@@ -1,0 +1,1 @@
+//this is home page: import header footer here
