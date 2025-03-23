@@ -2,12 +2,12 @@
 
 const express = require("express");
 const mongoose = require("mongoose");
+const router = require("./Routes/UserRoutes");
+
 const app = express();
 
-//middleware
-app.use("/",(req, res, next) => {
-    res.send("It's working");
-})
+//Middleware
+app.use("/users",router);
 
 mongoose.connect("mongodb+srv://admin:queickfixeradmin123@quickfixer.w5ect.mongodb.net/")
 .then(()=> console.log("Connected to MongoDB"))
