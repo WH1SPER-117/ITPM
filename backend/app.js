@@ -6,7 +6,7 @@ const serviceCategoryRoutes = require("./Routes/ServiceCategoryRoutes");
 
 const app = express();
 
-// Middleware (CORS should be first)
+// Middleware
 app.use(cors());
 app.use(express.json());
 
@@ -14,8 +14,8 @@ app.use(express.json());
 const mongoURI = "mongodb+srv://admin:queickfixeradmin123@quickfixer.w5ect.mongodb.net/";
 mongoose
   .connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log("✅ Connected to MongoDB"))
-  .catch((err) => console.error("❌ MongoDB connection error:", err));
+  .then(() => console.log(" Connected to MongoDB"))
+  .catch((err) => console.error(" MongoDB connection error:", err));
 
 // Routes
 app.use("/users", userRoutes);
@@ -24,7 +24,7 @@ app.use("/api/categories", serviceCategoryRoutes);
 // Server Port
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(` Server running on port ${PORT}`);
 });
 
 

@@ -6,5 +6,10 @@ router.post("/", serviceCategoryController.createCategory);
 router.get("/", serviceCategoryController.getCategories);
 router.post("/add-service", serviceCategoryController.addService);
 router.delete("/:categoryId/:serviceId", serviceCategoryController.deleteService);
+router.put("/:categoryId", serviceCategoryController.updateCategory);
+router.delete("/:categoryId", serviceCategoryController.deleteCategory);
+router.put("/:categoryId/services/:serviceId", serviceCategoryController.updateService);
+router.delete("/:categoryId/services/:serviceId", serviceCategoryController.deleteService);
+
 
 module.exports = router;
