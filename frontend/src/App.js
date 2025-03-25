@@ -19,8 +19,8 @@ import Header from "./Components/Home/Header"
 import Home from "./Components/Home/Home"
 import Footer from "./Components/Home/Footer"
 import "./App.css"
-import ServiceCategories from "./Components/Service Catalog/ServiceCategories"
-import AddCategory from "./Components/Service Catalog/AddCategory"
+import ServiceCategories from "./Components/ServiceCatalog/ServiceCategories"
+import AddCategory from "./Components/ServiceCatalog/AddCategory"
 
 
 function App() {

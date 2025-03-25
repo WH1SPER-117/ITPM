@@ -22,6 +22,16 @@ exports.getCategories = async (req, res) => {
   }
 };
 
+// Get all service categories with services
+exports.getCategories = async (req, res) => {
+  try {
+    const categories = await ServiceCategory.find();
+    res.status(200).json(categories);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 // Add a service to a category
 exports.addService = async (req, res) => {
   try {
