@@ -169,11 +169,12 @@ export default function Header() {
                 className="flex gap-2 mt-2"
               >
                 <button className="flex-1 px-4 py-2 border border-blue-medium text-blue-medium hover:bg-blue-lighter hover:text-blue-dark rounded-md">
-                  Sign In
+                  Login
                 </button>
                 <button className="flex-1 px-4 py-2 bg-blue-medium hover:bg-blue-dark text-white rounded-md">
                   Sign Up
                 </button>
+                
               </motion.div>
             </div>
           </motion.div>

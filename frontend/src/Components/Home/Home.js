@@ -17,6 +17,8 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import Header from "./Header";
+import Footer from "./Footer";
 import {
   ArrowRight,
   CheckCircle,
@@ -33,8 +35,11 @@ import {
 import { motion, AnimatePresence } from "framer-motion"
 import ServiceFinder from "./ServiceFinder"
 import PricingCalculator from "./PricingCalculator"
+import { useNavigate } from "react-router-dom";
+
 
 export default function Home() {
+  const navigate = useNavigate();
   const [visibleSections, setVisibleSections] = useState({
     hero: false,
     services: false,
@@ -214,6 +219,7 @@ export default function Home() {
   ]
 
   const faqs = [
+    
     {
       question: "How do I book a service?",
       answer:
@@ -240,8 +246,12 @@ export default function Home() {
         "We stand behind the quality of our services. All services come with a satisfaction guarantee, and many of our providers offer additional service-specific guarantees.",
     },
   ]
-
+  
+  
+  
   return (
+    <div>
+      <Header/>
     <main className="flex-1 overflow-hidden">
       {/* Floating Service Finder */}
       <ServiceFinder />
@@ -361,7 +371,8 @@ export default function Home() {
                   </button>
                 </motion.div>
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <button className="px-6 py-3 border border-blue-medium text-blue-medium hover:bg-blue-lighter hover:text-blue-dark transition-all duration-300 rounded-md">
+                  <button className="px-6 py-3 border border-blue-medium text-blue-medium hover:bg-blue-lighter hover:text-blue-dark transition-all duration-300 rounded-md"
+                  onClick={() => navigate("/Test")}  >
                     Find Customers
                   </button>
                 </motion.div>
@@ -891,6 +902,10 @@ export default function Home() {
         </div>
       </section>
     </main>
+    <Footer/>
+    </div>
   )
 }
+
+
 
