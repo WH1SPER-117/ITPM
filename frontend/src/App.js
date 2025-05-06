@@ -14,11 +14,13 @@
 
 // export default App;
 
-import { Routes, Route } from "react-router-dom"
-import Header from "./Components/Home/Header"
-import Home from "./Components/Home/Home"
-import Footer from "./Components/Home/Footer"
-import "./App.css"
+import { Routes, Route } from "react-router-dom";
+import Header from "./Components/Home/Header";
+import Home from "./Components/Home/Home";
+import Footer from "./Components/Home/Footer";
+import Login from "./Components/login/Login";
+import { Container } from "react-bootstrap";
+import "./App.css";
 
 function App() {
   return (
@@ -26,12 +28,11 @@ function App() {
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />
-        {/* Add more routes as needed */}
+        <Route path="/login" element={<Login />} />
       </Routes>
       <Footer />
     </div>
-  )
+  );
 }
 
-export default App
-
+export default App;

@@ -17,8 +17,7 @@ code {
 }
  */
 
-
- @tailwind base;
+@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
@@ -202,7 +201,8 @@ code {
 }
 
 .via-teal-light {
-  --tw-gradient-stops: var(--tw-gradient-from), var(--teal-light), var(--tw-gradient-to);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--teal-light),
+    var(--tw-gradient-to);
 }
 
 .hover\:bg-blue-medium:hover {
@@ -282,4 +282,3 @@ code {
     max-width: 1536px;
   }
 }
-

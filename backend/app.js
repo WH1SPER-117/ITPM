@@ -6,6 +6,10 @@ const dotenv = require("dotenv");
 const router = require("./Routes/UserRoutes");
 const ServiceProviderRouter = require("./Routes/ServiceProviderRoutes");
 const chats = require("./Data/data");
+const AllUserRoutes = require("./Routes/AllUserRoutes");
+
+const { notFound, errorHandler } = require("./Middlewares/errorMiddleware");
+const asyncHandler = require("express-async-handler");
 
 const app = express();
 
@@ -13,6 +17,8 @@ const app = express();
 app.use(express.json());
 app.use("/users", router);
 app.use("/serviceProviders", ServiceProviderRouter);
+app.use("/allUsers", AllUserRoutes);
+dotenv.config();
 
 app.get("/", (req, res) => {
   res.send("API is running successfully");
@@ -27,6 +33,9 @@ app.get("/api/chat/:id", (req, res) => {
   const singleChat = chats.find((c) => c._id === req.params.id);
   res.send(singleChat);
 });
+
+app.use(notFound);
+app.use(errorHandler);
 
 //MongoDB connection
 mongoose
