@@ -7,11 +7,15 @@ const router = require("./Routes/UserRoutes");
 const ServiceProviderRouter = require("./Routes/ServiceProviderRoutes");
 const chats = require("./Data/data");
 const AllUserRoutes = require("./Routes/AllUserRoutes");
+const chatRoutes = require("./Routes/chatRoutes");
 
 const { notFound, errorHandler } = require("./Middlewares/errorMiddleware");
 const asyncHandler = require("express-async-handler");
 
 const app = express();
+
+const cors = require("cors");
+app.use(cors({ origin: "http://localhost:3000" })); // Adjust to your frontend URL
 
 //Middleware
 app.use(express.json());
@@ -19,6 +23,7 @@ app.use("/users", router);
 app.use("/serviceProviders", ServiceProviderRouter);
 app.use("/allUsers", AllUserRoutes);
 dotenv.config();
+app.use("/chat", chatRoutes);
 
 app.get("/", (req, res) => {
   res.send("API is running successfully");

@@ -21,7 +21,8 @@ import Footer from "./Components/Home/Footer";
 import Login from "./Components/login/Login";
 import { Container } from "react-bootstrap";
 import "./App.css";
-
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 function App() {
   return (
     <div className="flex min-h-screen flex-col">
@@ -31,6 +32,7 @@ function App() {
         <Route path="/login" element={<Login />} />
       </Routes>
       <Footer />
+      <ToastContainer />
     </div>
   );
 }
