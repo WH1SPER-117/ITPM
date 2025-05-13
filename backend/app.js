@@ -8,6 +8,7 @@ const ServiceProviderRouter = require("./Routes/ServiceProviderRoutes");
 const chats = require("./Data/data");
 const AllUserRoutes = require("./Routes/AllUserRoutes");
 const chatRoutes = require("./Routes/chatRoutes");
+const messageRoutes = require("./Routes/messageRoutes");
 
 const { notFound, errorHandler } = require("./Middlewares/errorMiddleware");
 const asyncHandler = require("express-async-handler");
@@ -21,9 +22,11 @@ app.use(cors({ origin: "http://localhost:3000" })); // Adjust to your frontend U
 app.use(express.json());
 app.use("/users", router);
 app.use("/serviceProviders", ServiceProviderRouter);
-app.use("/allUsers", AllUserRoutes);
+
 dotenv.config();
+app.use("/allUsers", AllUserRoutes);
 app.use("/chat", chatRoutes);
+app.use("/message", messageRoutes);
 
 app.get("/", (req, res) => {
   res.send("API is running successfully");
@@ -43,10 +46,21 @@ app.use(notFound);
 app.use(errorHandler);
 
 //MongoDB connection
-mongoose
+const server = mongoose
   .connect("mongodb+srv://admin:test123@cluster0.udmxtyy.mongodb.net/")
   .then(() => console.log("Connected to MongoDB"))
   .then(() => {
     app.listen(5000);
   })
   .catch((err) => console.log(err));
+
+const io = require("socket.io")(server, {
+  pingTimeout: 60000,
+  cors: {
+    origin: "http://localhost:3000",
+  },
+});
+
+io.on("connection", (socket) => {
+  console.log("Connected to socket.io");
+});

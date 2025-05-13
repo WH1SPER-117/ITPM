@@ -23,15 +23,15 @@ import { Container } from "react-bootstrap";
 import "./App.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import ChatPage from "./Pages/ChatPage";
 function App() {
   return (
     <div className="flex min-h-screen flex-col">
-      <Header />
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<Login />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/chatpage" element={<ChatPage />} />
       </Routes>
-      <Footer />
       <ToastContainer />
     </div>
   );
