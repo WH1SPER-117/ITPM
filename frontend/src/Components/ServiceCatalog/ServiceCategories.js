@@ -4,7 +4,7 @@ export default function ServiceCategories() {
   const [categories, setCategories] = useState([]);
   const [editCategoryId, setEditCategoryId] = useState(null);
   const [newCategoryName, setNewCategoryName] = useState("");
-  const [editingServiceId, setEditingServiceId] = useState(null);
+  const [editingService, setEditingService] = useState(null);
   const [newServiceName, setNewServiceName] = useState("");
 
   useEffect(() => {
@@ -17,8 +17,8 @@ export default function ServiceCategories() {
     setCategories(data);
   };
 
-  const updateCategory = async (id) => {
-    await fetch(`http://localhost:5000/api/categories/${id}`, {
+  const updateCategory = async (categoryId) => {
+    await fetch(`http://localhost:5000/api/categories/${categoryId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ categoryName: newCategoryName }),
@@ -27,23 +27,25 @@ export default function ServiceCategories() {
     fetchCategories();
   };
 
-  const deleteCategory = async (id) => {
-    await fetch(`http://localhost:5000/api/categories/${id}`, { method: "DELETE" });
+  const deleteCategory = async (categoryId) => {
+    await fetch(`http://localhost:5000/api/categories/${categoryId}`, {
+      method: "DELETE",
+    });
     fetchCategories();
   };
 
-  const updateService = async (catId, srvId) => {
-    await fetch(`http://localhost:5000/api/categories/${catId}/services/${srvId}`, {
+  const updateService = async (categoryId, serviceId) => {
+    await fetch(`http://localhost:5000/api/categories/${categoryId}/services/${serviceId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ serviceName: newServiceName }),
     });
-    setEditingServiceId(null);
+    setEditingService(null);
     fetchCategories();
   };
 
-  const deleteService = async (catId, srvId) => {
-    await fetch(`http://localhost:5000/api/categories/${catId}/services/${srvId}`, {
+  const deleteService = async (categoryId, serviceId) => {
+    await fetch(`http://localhost:5000/api/categories/${categoryId}/services/${serviceId}`, {
       method: "DELETE",
     });
     fetchCategories();
@@ -52,56 +54,62 @@ export default function ServiceCategories() {
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold text-darkBlue mb-4">Service Categories</h2>
-      {categories.map((cat) => (
-        <div key={cat.categoryId} className="bg-softBlue p-4 rounded-lg shadow-lg mb-4">
-          {editCategoryId === cat.categoryId ? (
-            <div className="flex gap-2 mb-2">
+      {categories.map((category) => (
+        <div key={category._id} className="bg-softBlue p-4 rounded-lg shadow-lg mb-3">
+          {editCategoryId === category._id ? (
+            <div className="flex gap-2">
               <input
-                className="border p-2 rounded-md flex-1"
+                className="border p-2 rounded-md"
                 value={newCategoryName}
                 onChange={(e) => setNewCategoryName(e.target.value)}
               />
-              <button className="bg-primary text-white px-3 py-1 rounded-md" onClick={() => updateCategory(cat.categoryId)}>
+              <button
+                className="bg-primary text-white px-3 py-1 rounded-md"
+                onClick={() => updateCategory(category._id)}
+              >
                 Save
               </button>
             </div>
           ) : (
-            <h3 className="text-xl font-semibold text-primary">{cat.categoryName}</h3>
+            <h3 className="text-xl font-semibold text-primary">{category.categoryName}</h3>
           )}
 
           <div className="flex gap-2 mt-2">
             <button
               className="text-white bg-secondary px-2 py-1 rounded-md"
               onClick={() => {
-                setEditCategoryId(cat.categoryId);
-                setNewCategoryName(cat.categoryName);
+                setEditCategoryId(category._id);
+                setNewCategoryName(category.categoryName);
               }}
             >
               Edit
             </button>
-            <button className="text-white bg-red-500 px-2 py-1 rounded-md" onClick={() => deleteCategory(cat.categoryId)}>
+            <button
+              className="text-white bg-red-500 px-2 py-1 rounded-md"
+              onClick={() => deleteCategory(category._id)}
+            >
               Delete
             </button>
           </div>
 
-          <ul className="list-disc pl-6 mt-4">
-            {cat.services.map((srv) => (
-              <li key={srv.serviceId} className="flex justify-between items-center gap-2 mb-1">
-                {editingServiceId === srv.serviceId ? (
+          <ul className="list-disc pl-6 text-darkBlue mt-2">
+            {category.services.map((service) => (
+              <li key={service._id} className="flex justify-between items-center">
+                {editingService === service._id ? (
                   <input
-                    className="border p-1 rounded-md flex-1"
+                    className="border p-1 rounded-md"
                     value={newServiceName}
                     onChange={(e) => setNewServiceName(e.target.value)}
                   />
                 ) : (
-                  <span>{srv.serviceName}</span>
+                  service.serviceName
                 )}
 
                 <div className="flex gap-2">
-                  {editingServiceId === srv.serviceId ? (
+                  {editingService === service._id ? (
                     <button
                       className="text-white bg-primary px-2 py-1 rounded-md"
-                      onClick={() => updateService(cat.categoryId, srv.serviceId)}
+                      onClick={() => updateService(category._id, service._id)}
                     >
                       Save
                     </button>
@@ -109,8 +117,8 @@ export default function ServiceCategories() {
                     <button
                       className="text-white bg-secondary px-2 py-1 rounded-md"
                       onClick={() => {
-                        setEditingServiceId(srv.serviceId);
-                        setNewServiceName(srv.serviceName);
+                        setEditingService(service._id);
+                        setNewServiceName(service.serviceName);
                       }}
                     >
                       Edit
@@ -118,7 +126,7 @@ export default function ServiceCategories() {
                   )}
                   <button
                     className="text-white bg-red-500 px-2 py-1 rounded-md"
-                    onClick={() => deleteService(cat.categoryId, srv.serviceId)}
+                    onClick={() => deleteService(category._id, service._id)}
                   >
                     Delete
                   </button>
