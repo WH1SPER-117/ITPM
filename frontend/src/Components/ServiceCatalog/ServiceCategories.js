@@ -70,6 +70,15 @@ export default function ServiceCategories() {
   const serviceName = newServiceInputs[categoryId];
   if (!serviceName) return;
 
+  const category = categories.find((cat) => cat._id === categoryId);
+  const isDuplicate = category.services.some(
+    (s) => s.serviceName.toLowerCase() === serviceName.toLowerCase()
+  );
+  if (isDuplicate) {
+    alert("Service name already exists in this category.");
+    return;
+  }
+
   await fetch(`http://localhost:5000/api/categories/${categoryId}/services`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -78,7 +87,8 @@ export default function ServiceCategories() {
 
   setNewServiceInputs((prev) => ({ ...prev, [categoryId]: "" }));
   fetchCategories();
-};
+  };
+
 
 
   const updateService = async (categoryId, serviceId) => {

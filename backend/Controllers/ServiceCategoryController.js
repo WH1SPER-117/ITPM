@@ -25,21 +25,26 @@ exports.getCategories = async (req, res) => {
 // Add a service to a category
 exports.addService = async (req, res) => {
   try {
-    const { categoryId } = req.params; 
+    const { categoryId } = req.params;
     const { serviceName } = req.body;
-    const category = await ServiceCategory.findOne({ categoryId });
 
-    if (!category){
-      return res.status(404).json({ error: "Category not found" });
-    } 
+    const category = await ServiceCategory.findById(categoryId);
+    if (!category) return res.status(404).json({ error: "Category not found" });
 
-    category.services.push({ serviceName });
+    const duplicate = category.services.some(
+      (s) => s.serviceName.toLowerCase() === serviceName.toLowerCase()
+    );
+    if (duplicate) return res.status(400).json({ error: "Service name already exists in this category." });
+
+    category.services.push({ serviceName }); // serviceId is auto-generated
     await category.save();
+
     res.status(200).json(category);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 // Update category name
 exports.updateCategory = async (req, res) => {
