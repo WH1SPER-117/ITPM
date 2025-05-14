@@ -1,23 +1,23 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { Link } from "react-router-dom"
-import { Search, Menu, X, CheckCircle } from "lucide-react"
-import { motion, AnimatePresence } from "framer-motion"
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { Search, Menu, X, CheckCircle } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import flogo from "../../Assets/F-logo.png";
 
 export default function Header() {
-  const [scrolled, setScrolled] = useState(false)
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [searchOpen, setSearchOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20)
-    }
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <header
@@ -36,18 +36,28 @@ export default function Header() {
             <div className="rounded-full bg-blue-50 p-1 transition-all duration-100 group-hover:bg-blue">
               <motion.div
                 // animate={{ rotate: [0, 360] }}
-                transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
+                transition={{
+                  duration: 3,
+                  repeat: Number.POSITIVE_INFINITY,
+                  ease: "linear",
+                }}
               >
                 {/* <CheckCircle className="h-6 w-6 text-white" /> */}
                 <img src={flogo} alt="Your Image" className="h-10 w-30" />
               </motion.div>
             </div>
-            
           </Link>
         </motion.div>
 
         <nav className="hidden md:flex items-center gap-6">
-          {["Home", "Services", "About Us", "Contact Us", "Terms of Use"].map((item, index) => (
+          {[
+            "Home",
+            "Services",
+            "About Us",
+            "V-Assist",
+            "Contact Us",
+            "Terms of Use",
+          ].map((item, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: -10 }}
@@ -55,7 +65,24 @@ export default function Header() {
               transition={{ duration: 0.3, delay: index * 0.1 }}
             >
               <Link
-                to={item === "Home" ? "/" : `#${item.toLowerCase().replace(/\s+/g, "-")}`}
+                to={
+                  item === "Home"
+                    ? "/home"
+                    : `#${item.toLowerCase().replace(/\s+/g, "-")}`
+                }
+                className={`text-sm font-medium relative overflow-hidden group ${
+                  index === 0 ? "text-blue-medium" : "text-blue-dark"
+                }`}
+              >
+                {item}
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-teal group-hover:w-full transition-all duration-300"></span>
+              </Link>
+              <Link
+                to={
+                  item === "V-Assist"
+                    ? "/chatpage"
+                    : `#${item.toLowerCase().replace(/\s+/g, "-")}`
+                }
                 className={`text-sm font-medium relative overflow-hidden group ${
                   index === 0 ? "text-blue-medium" : "text-blue-dark"
                 }`}
@@ -98,7 +125,9 @@ export default function Header() {
                       className="bg-transparent border-none outline-none flex-1 text-sm text-blue-dark placeholder:text-blue-medium/70"
                     />
                   </div>
-                  <div className="mt-2 text-xs text-blue-medium">Popular: Plumbing, Cleaning, Electrical</div>
+                  <div className="mt-2 text-xs text-blue-medium">
+                    Popular: Plumbing, Cleaning, Electrical
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -130,7 +159,11 @@ export default function Header() {
             className="md:hidden text-blue-medium hover:text-blue-dark p-2 bg-transparent"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
-            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            {mobileMenuOpen ? (
+              <X className="h-6 w-6" />
+            ) : (
+              <Menu className="h-6 w-6" />
+            )}
           </button>
         </div>
       </div>
@@ -146,7 +179,13 @@ export default function Header() {
             transition={{ duration: 0.3 }}
           >
             <div className="container py-4 flex flex-col gap-4">
-              {["Home", "Services", "About Us", "Contact Us", "Terms of Use"].map((item, index) => (
+              {[
+                "Home",
+                "Services",
+                "About Us",
+                "Contact Us",
+                "Terms of Use",
+              ].map((item, index) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, x: -20 }}
@@ -154,7 +193,11 @@ export default function Header() {
                   transition={{ duration: 0.3, delay: index * 0.1 }}
                 >
                   <Link
-                    to={item === "Home" ? "/" : `#${item.toLowerCase().replace(/\s+/g, "-")}`}
+                    to={
+                      item === "Home"
+                        ? "/"
+                        : `#${item.toLowerCase().replace(/\s+/g, "-")}`
+                    }
                     className="text-blue-dark block py-2 hover:text-blue-medium transition-colors"
                     onClick={() => setMobileMenuOpen(false)}
                   >
@@ -180,6 +223,5 @@ export default function Header() {
         )}
       </AnimatePresence>
     </header>
-  )
+  );
 }
-

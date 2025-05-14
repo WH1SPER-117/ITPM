@@ -9,13 +9,16 @@ const chats = require("./Data/data");
 const AllUserRoutes = require("./Routes/AllUserRoutes");
 const chatRoutes = require("./Routes/chatRoutes");
 const messageRoutes = require("./Routes/messageRoutes");
-
 const { notFound, errorHandler } = require("./Middlewares/errorMiddleware");
 const asyncHandler = require("express-async-handler");
-
+const cors = require("cors");
+const connectDB = require("./Config/db");
 const app = express();
 
-const cors = require("cors");
+dotenv.config();
+
+connectDB();
+
 app.use(cors({ origin: "http://localhost:3000" })); // Adjust to your frontend URL
 
 //Middleware
@@ -23,7 +26,6 @@ app.use(express.json());
 app.use("/users", router);
 app.use("/serviceProviders", ServiceProviderRouter);
 
-dotenv.config();
 app.use("/allUsers", AllUserRoutes);
 app.use("/chat", chatRoutes);
 app.use("/message", messageRoutes);
@@ -32,11 +34,11 @@ app.get("/", (req, res) => {
   res.send("API is running successfully");
 });
 
-app.get("/api/chat", (req, res) => {
+app.get("/chat", (req, res) => {
   res.send(chats);
 });
 
-app.get("/api/chat/:id", (req, res) => {
+app.get("/chat/:id", (req, res) => {
   console.log(req.params.id);
   const singleChat = chats.find((c) => c._id === req.params.id);
   res.send(singleChat);
@@ -45,22 +47,47 @@ app.get("/api/chat/:id", (req, res) => {
 app.use(notFound);
 app.use(errorHandler);
 
-//MongoDB connection
-const server = mongoose
-  .connect("mongodb+srv://admin:test123@cluster0.udmxtyy.mongodb.net/")
-  .then(() => console.log("Connected to MongoDB"))
-  .then(() => {
-    app.listen(5000);
-  })
-  .catch((err) => console.log(err));
-
+const PORT = process.env.PORT || 5000;
+const server = app.listen(PORT, () => {
+  console.log(`Server running on PORT ${PORT}...`);
+});
+//stock.io
 const io = require("socket.io")(server, {
   pingTimeout: 60000,
   cors: {
     origin: "http://localhost:3000",
+    // credentials: true,
   },
 });
 
 io.on("connection", (socket) => {
   console.log("Connected to socket.io");
+  socket.on("setup", (userData) => {
+    socket.join(userData._id);
+    socket.emit("connected");
+  });
+
+  socket.on("join chat", (room) => {
+    socket.join(room);
+    console.log("User Joined Room: " + room);
+  });
+  socket.on("typing", (room) => socket.in(room).emit("typing"));
+  socket.on("stop typing", (room) => socket.in(room).emit("stop typing"));
+
+  socket.on("new message", (newMessageRecieved) => {
+    var chat = newMessageRecieved.chat;
+
+    if (!chat.users) return console.log("chat.users not defined");
+
+    chat.users.forEach((user) => {
+      if (user._id == newMessageRecieved.sender._id) return;
+
+      socket.in(user._id).emit("message recieved", newMessageRecieved);
+    });
+  });
+
+  socket.off("setup", () => {
+    console.log("USER DISCONNECTED");
+    socket.leave(userData._id);
+  });
 });

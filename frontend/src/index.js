@@ -7,14 +7,19 @@ import reportWebVitals from "./reportWebVitals";
 import { ToastContainer } from "react-toastify";
 import ChatProvider from "./Context/ChatProvider";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import Header from "./Components/Home/Header";
+import Footer from "./Components/Home/Footer";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <BrowserRouter>
+      <Header />
+
       <ChatProvider>
         <App />
       </ChatProvider>
+      <Footer />
     </BrowserRouter>
   </React.StrictMode>
 );

@@ -1,16 +1,29 @@
 import React from "react";
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { getSender } from "../Config/ChatLogics";
-import { ChatState } from "../../Context/ChatProvider";
-import GroupChatModal from "./GroupChatModal";
-const MyChats = () => {
+import { useEffect, useState } from "react";
+import { getSender } from "../Config/ChatLogics.js";
+import ChatLoading from "./ChatLoading.js";
+import GroupChatModal from "./GroupChatModal.js";
+import { ChatState } from "../../Context/ChatProvider.js";
+
+const MyChats = ({ fetchAgain }) => {
   const [loggedUser, setLoggedUser] = useState();
   const { selectedChat, setSelectedChat, user, chats, setChats } = ChatState();
-  const history = useNavigate();
-  // Assuming toast is handled elsewhere or replaced with Bootstrap alerts
-  // const toast = useToast();
+
+  const toast = (options) => {
+    // Simulate Chakra UI toast with Bootstrap alert
+    const alert = document.createElement("div");
+    alert.className = `alert alert-${options.status} alert-dismissible fade show position-fixed`;
+    alert.style.bottom = "10px";
+    alert.style.left = "10px";
+    alert.style.zIndex = "1050";
+    alert.innerHTML = `
+      <strong>${options.title}</strong> ${options.description}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    document.body.appendChild(alert);
+    setTimeout(() => alert.remove(), options.duration || 5000);
+  };
 
   const fetchChats = async () => {
     try {
@@ -20,87 +33,120 @@ const MyChats = () => {
         },
       };
 
-      const { data } = await axios.post("http://localhost:5000/chat", config);
-      console.log(data);
+      const { data } = await axios.get("http://localhost:5000/chat", config);
       setChats(data);
     } catch (error) {
-      // Using Bootstrap alert instead of toast
-      const alertDiv = document.createElement("div");
-      alertDiv.className = "alert alert-warning alert-dismissible fade show";
-      alertDiv.role = "alert";
-      alertDiv.innerHTML = `
-        <strong>Error Occurred!</strong> Failed to Load the Chats
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      `;
-      document.body.appendChild(alertDiv);
-      setTimeout(() => alertDiv.remove(), 5000);
+      toast({
+        title: "Error Occured!",
+        description: "Failed to Load the chats",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom-left",
+      });
     }
   };
 
   useEffect(() => {
     setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
     fetchChats();
-  }, []);
+  }, [fetchAgain]);
+
+  if (!user) {
+    return null;
+  }
 
   return React.createElement(
     "div",
     {
-      className: `d-${
-        selectedChat ? "none" : "flex"
-      } flex-column align-items-center p-3 bg-white w-100 w-md-31 border rounded`,
-      style: { width: selectedChat ? "100%" : "31%" },
+      className: `d-flex flex-column align-items-center p-3 bg-white border rounded-3 ${
+        selectedChat ? "d-none d-md-flex" : "d-flex"
+      }`,
+      style: { width: "100%", maxWidth: "31%" },
     },
     React.createElement(
       "div",
       {
         className:
-          "d-flex justify-content-between align-items-center w-100 p-3",
-        style: { fontSize: "28px", fontFamily: "'Work Sans', sans-serif" },
+          "d-flex justify-content-between align-items-center w-100 pb-3 px-3",
       },
-      "My Chats",
+      React.createElement(
+        "h4",
+        {
+          className: "mb-0",
+          style: {
+            fontFamily: "'Work Sans', sans-serif",
+            fontSize: "1.875rem",
+          },
+        },
+        "My Chats"
+      ) /*,
       React.createElement(
         GroupChatModal,
         null,
         React.createElement(
           "button",
           {
-            className: "btn btn-primary d-flex align-items-center",
+            className: "btn btn-outline-primary d-flex align-items-center",
             style: { fontSize: "17px" },
           },
           "New Group Chat",
-          React.createElement("i", { className: "bi bi-plus ms-2" }) // Using Bootstrap Icons for AddIcon
+          React.createElement("i", { className: "fas fa-plus ms-1" })
         )
-      )
+      )*/
     ),
     React.createElement(
       "div",
       {
-        className:
-          "d-flex flex-column p-3 bg-light w-100 h-100 rounded overflow-hidden",
+        className: "d-flex flex-column p-3 w-100 h-100 rounded-3",
+        style: { backgroundColor: "#F8F8F8", overflowY: "hidden" },
       },
-      chats &&
-        chats.map((chat) =>
-          React.createElement(
+      chats
+        ? React.createElement(
             "div",
-            {
-              key: chat._id,
-              onClick: () => setSelectedChat(chat),
-              className: `p-3 mb-2 rounded ${
-                selectedChat === chat
-                  ? "bg-info text-white"
-                  : "bg-secondary-subtle text-dark"
-              }`,
-              style: { cursor: "pointer" },
-            },
-            React.createElement(
-              "p",
-              { className: "m-0" },
-              !chat.isGroupChat
-                ? getSender(loggedUser, chat.users)
-                : chat.chatName
+            { className: "overflow-y-scroll" },
+            chats.map((chat) =>
+              React.createElement(
+                "div",
+                {
+                  key: chat._id,
+                  className: `p-2 mb-2 rounded-3 cursor-pointer ${
+                    selectedChat === chat ? "bg-teal text-white" : "bg-gray-200"
+                  }`,
+                  onClick: () => setSelectedChat(chat),
+                },
+                React.createElement(
+                  "div",
+                  {
+                    className: `fw-bold ${
+                      selectedChat === chat ? "text-white" : "text-dark"
+                    }`,
+                  },
+                  !chat.isGroupChat
+                    ? getSender(loggedUser, chat.users)
+                    : chat.chatName
+                ),
+                chat.latestMessage &&
+                  React.createElement(
+                    "small",
+                    {
+                      className:
+                        selectedChat === chat ? "text-white" : "text-muted",
+                    },
+                    React.createElement(
+                      "b",
+                      null,
+                      chat.latestMessage.sender.name,
+                      ": "
+                    ),
+                    chat.latestMessage.content.length > 50
+                      ? chat.latestMessage.content.substring(0, 51) + "..."
+                      : chat.latestMessage.content
+                  )
+              )
             )
           )
-        )
+        : React.createElement(ChatLoading, null)
     )
   );
 };
