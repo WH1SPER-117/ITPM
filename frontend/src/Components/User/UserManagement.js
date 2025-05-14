@@ -19,7 +19,7 @@ const UserManagement = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get("http://localhost:5001/users");
+      const response = await axios.get("http://localhost:5000/users");
       setUsers(response.data.users);
     } catch (error) {
       console.error("Error fetching users", error);
@@ -53,7 +53,7 @@ const UserManagement = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:5001/users/${id}`);
+      await axios.delete(`http://localhost:5000/users/${id}`);
       fetchUsers();
     } catch (error) {
       console.error("Error deleting user", error);
