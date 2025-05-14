@@ -149,9 +149,27 @@ const loginServiceProvider = async (req, res, next) => {
   }
 };
 
+// Delete a pending service provider
+const deletePendingServiceProvider = async (req, res, next) => {
+  const { id } = req.params;
+
+  try {
+    const provider = await PendingServiceProvider.findOne({ pendingServiceProviderID: id });
+    if (!provider) {
+      return res.status(404).json({ message: "Pending service provider not found" });
+    }
+    await PendingServiceProvider.deleteOne({ pendingServiceProviderID: id });
+    return res.status(200).json({ message: "Pending service provider deleted successfully" });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Failed to delete pending service provider", error: err.message });
+  }
+};
+
 exports.addPendingServiceProvider = addPendingServiceProvider;
 exports.addServiceProvider = addServiceProvider;
 exports.approvePendingServiceProvider = approvePendingServiceProvider;
 exports.getPendingServiceProviders = getPendingServiceProviders;
 exports.getPendingServiceProviderById = getPendingServiceProviderById;
 exports.loginServiceProvider = loginServiceProvider; 
+exports.deletePendingServiceProvider = deletePendingServiceProvider;

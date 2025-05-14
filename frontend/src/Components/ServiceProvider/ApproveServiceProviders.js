@@ -3,13 +3,15 @@ import Header from '../Home/Header';
 import Footer from '../Home/Footer';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { Trash2 } from 'lucide-react'; // Import trash bin icon
 
 function ApproveServiceProviders() {
   const navigate = useNavigate();
   const [providers, setProviders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [confirmingId, setConfirmingId] = useState(null); // Track the ID being confirmed
+  const [confirmingId, setConfirmingId] = useState(null); // For approval confirmation
+  const [rejectingId, setRejectingId] = useState(null); // For rejection confirmation
   const [localApproved, setLocalApproved] = useState({}); // Local checkbox state
 
   // Fetch pending service providers from backend
@@ -18,7 +20,6 @@ function ApproveServiceProviders() {
       try {
         const response = await axios.get('http://localhost:5000/serviceProviders/pending');
         setProviders(response.data);
-        // Initialize localApproved state based on fetched data
         const initialApproved = response.data.reduce((acc, provider) => ({
           ...acc,
           [provider.pendingServiceProviderID]: provider.isApproved === "Yes",
@@ -35,19 +36,18 @@ function ApproveServiceProviders() {
   }, []);
 
   // Toggle approval status with confirmation
-  const toggleApproval = async (id) => {
-    setConfirmingId(id); // Show confirmation modal
+  const toggleApproval = (id) => {
+    setConfirmingId(id);
   };
 
-  // Handle confirmation result
-  const handleConfirmation = async (confirmed, id) => {
-    setConfirmingId(null); // Hide modal
+  // Handle approval confirmation result
+  const handleApprovalConfirmation = async (confirmed, id) => {
+    setConfirmingId(null);
     if (!confirmed) {
-      setLocalApproved(prev => ({ ...prev, [id]: false })); // Revert checkbox if canceled
+      setLocalApproved(prev => ({ ...prev, [id]: false }));
       return;
     }
 
-    // Optimistic update: Set local state to approved while waiting for backend
     setLocalApproved(prev => ({ ...prev, [id]: true }));
     try {
       const response = await axios.patch(`http://localhost:5000/serviceProviders/approve/${id}`, { isApproved: "Yes" });
@@ -57,7 +57,31 @@ function ApproveServiceProviders() {
       }
     } catch (err) {
       setError('Failed to approve service provider');
-      setLocalApproved(prev => ({ ...prev, [id]: false })); // Revert on failure
+      setLocalApproved(prev => ({ ...prev, [id]: false }));
+      console.error(err);
+    }
+  };
+
+  // Initiate rejection with confirmation
+  const initiateRejection = (id) => {
+    setRejectingId(id);
+  };
+
+  // Handle rejection confirmation result
+  const handleRejectionConfirmation = async (confirmed, id) => {
+    setRejectingId(null);
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      const response = await axios.delete(`http://localhost:5000/serviceProviders/pending/${id}`);
+      if (response.status === 200) {
+        setProviders(providers.filter(provider => provider.pendingServiceProviderID !== id));
+        alert('Service provider rejected and removed from pending list!');
+      }
+    } catch (err) {
+      setError('Failed to reject service provider');
       console.error(err);
     }
   };
@@ -78,6 +102,7 @@ function ApproveServiceProviders() {
               <th className="p-3 border">Email</th>
               <th className="p-3 border">Phone</th>
               <th className="p-3 border">Approve</th>
+              <th className="p-3 border">Reject</th>
               <th className="p-3 border">Details</th>
             </tr>
           </thead>
@@ -98,6 +123,15 @@ function ApproveServiceProviders() {
                 </td>
                 <td className="p-3 border">
                   <button
+                    onClick={() => initiateRejection(provider.pendingServiceProviderID)}
+                    className="text-red-500 hover:text-red-700 transition duration-300"
+                    disabled={provider.isApproved === "Yes"}
+                  >
+                    <Trash2 className="h-5 w-5 mx-auto" />
+                  </button>
+                </td>
+                <td className="p-3 border">
+                  <button
                     className="text-[#34729c] underline hover:text-[#6ec1d1] transition duration-300"
                     onClick={() => navigate(`/ServiceProviderDetails/${provider.pendingServiceProviderID}`)}
                   >
@@ -112,7 +146,7 @@ function ApproveServiceProviders() {
       </div>
       <Footer />
 
-      {/* Confirmation Modal */}
+      {/* Approval Confirmation Modal */}
       {confirmingId && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-2xl max-w-md w-full">
@@ -121,13 +155,37 @@ function ApproveServiceProviders() {
             <div className="flex justify-end gap-4">
               <button
                 className="bg-[#6cb1da] text-white py-2 px-4 rounded-lg hover:bg-[#6ec1d1] transition duration-300"
-                onClick={() => handleConfirmation(true, confirmingId)}
+                onClick={() => handleApprovalConfirmation(true, confirmingId)}
               >
                 Yes, Approve
               </button>
               <button
                 className="bg-[#34729c] text-white py-2 px-4 rounded-lg hover:bg-[#6ec1d1] transition duration-300"
-                onClick={() => handleConfirmation(false, confirmingId)}
+                onClick={() => handleApprovalConfirmation(false, confirmingId)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Rejection Confirmation Modal */}
+      {rejectingId && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-2xl max-w-md w-full">
+            <h2 className="text-2xl font-bold text-[#1e5470] mb-4">Confirm Rejection</h2>
+            <p className="text-[#1e5470] mb-6">Are you sure you want to reject this service provider? This action will permanently delete their record.</p>
+            <div className="flex justify-end gap-4">
+              <button
+                className="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition duration-300"
+                onClick={() => handleRejectionConfirmation(true, rejectingId)}
+              >
+                Reject Provider
+              </button>
+              <button
+                className="bg-[#34729c] text-white py-2 px-4 rounded-lg hover:bg-[#6ec1d1] transition duration-300"
+                onClick={() => handleRejectionConfirmation(false, rejectingId)}
               >
                 Cancel
               </button>

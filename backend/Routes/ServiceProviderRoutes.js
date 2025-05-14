@@ -13,6 +13,7 @@ serviceProviderRouter.patch("/approve/:id", serviceProviderController.approvePen
 serviceProviderRouter.get("/pending", serviceProviderController.getPendingServiceProviders); 
 serviceProviderRouter.get("/pending/:id", serviceProviderController.getPendingServiceProviderById); 
 serviceProviderRouter.post("/login", serviceProviderController.loginServiceProvider);
+serviceProviderRouter.delete("/pending/:id", serviceProviderController.deletePendingServiceProvider);
 
 module.exports = serviceProviderRouter;
 
