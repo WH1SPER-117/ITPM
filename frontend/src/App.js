@@ -28,23 +28,20 @@ import Home from "./Components/Home/Home";
 
 function App() {
   return (
-    <div className="flex min-h-screen flex-col">
+    <><div className="flex min-h-screen flex-col">
       <Header />
       <Routes>
-        <Route path="/" element={<Home/>} />
-        <Route path="/ServiceCategories" element={< ServiceCategories/>} />
-        <Route path="/UserManagement" element={< UserManagement/>} />
+        <Route path="/" element={<Home />} />
+        <Route path="/ServiceCategories" element={<ServiceCategories />} />
+        <Route path="/UserManagement" element={<UserManagement />} />
         {/* Add more routes as needed */}
       </Routes>
       <Footer />
-    </div>
-   
-    <div className="min-h-screen bg-lightBlue flex flex-col items-center p-6">
-      <h1 className="text-3xl font-bold text-primary mb-6">Service Catalog</h1>
-      <AddCategory />
-      <ServiceCategories />
-    </div>
-    </Router> 
+    </div><div className="min-h-screen bg-lightBlue flex flex-col items-center p-6">
+        <h1 className="text-3xl font-bold text-primary mb-6">Service Catalog</h1>
+        <AddCategory />
+        <ServiceCategories />
+      </div></>
   );
 
 }

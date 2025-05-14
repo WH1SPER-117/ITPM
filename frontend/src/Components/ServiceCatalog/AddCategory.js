@@ -8,7 +8,7 @@ export default function AddCategory() {
     e.preventDefault();
     const newCategory = { categoryId, categoryName, services: [] };
 
-    await fetch("http://localhost:5001/api/categories", {
+    await fetch("http://localhost:5000/api/categories", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(newCategory),

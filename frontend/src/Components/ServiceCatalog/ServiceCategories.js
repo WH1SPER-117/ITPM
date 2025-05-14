@@ -12,14 +12,14 @@ export default function ServiceCategories() {
   }, []);
 
   const fetchCategories = () => {
-    fetch("http://localhost:5001/api/categories")
+    fetch("http://localhost:5000/api/categories")
       .then((res) => res.json())
       .then((data) => setCategories(data))
       .catch((err) => console.error(err));
   };
 
   const updateCategory = async (categoryId) => {
-    await fetch(`http://localhost:5001/api/categories/${categoryId}`, {
+    await fetch(`http://localhost:5000/api/categories/${categoryId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ categoryName: newCategoryName }),

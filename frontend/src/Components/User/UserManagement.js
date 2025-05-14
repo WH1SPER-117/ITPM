@@ -34,9 +34,9 @@ const UserManagement = () => {
     e.preventDefault();
     try {
       if (selectedUser) {
-        await axios.put(`http://localhost:5001/users/${selectedUser._id}`, formData);
+        await axios.put(`http://localhost:5000/users/${selectedUser._id}`, formData);
       } else {
-        await axios.post("http://localhost:5001/users", formData);
+        await axios.post("http://localhost:5000/users", formData);
       }
       fetchUsers();
       setFormData({ name: "", email: "", contactNo: "", address: "", username: "", password: "" });
