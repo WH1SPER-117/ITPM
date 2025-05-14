@@ -4,7 +4,7 @@ const ServiceCategory = require("../Model/ServiceCategory");
 exports.createCategory = async (req, res) => {
   try {
     const { categoryId, categoryName, services } = req.body;
-    const category = new ServiceCategory({ categoryId, categoryName, services });
+    const category = new ServiceCategory({ categoryName });
     await category.save();
     res.status(201).json(category);
   } catch (error) {
@@ -25,12 +25,15 @@ exports.getCategories = async (req, res) => {
 // Add a service to a category
 exports.addService = async (req, res) => {
   try {
-    const { categoryId, serviceId, serviceName } = req.body;
+    const { categoryId } = req.params; 
+    const { serviceName } = req.body;
     const category = await ServiceCategory.findOne({ categoryId });
 
-    if (!category) return res.status(404).json({ error: "Category not found" });
+    if (!category){
+      return res.status(404).json({ error: "Category not found" });
+    } 
 
-    category.services.push({ serviceId, serviceName });
+    category.services.push({ serviceName });
     await category.save();
     res.status(200).json(category);
   } catch (error) {

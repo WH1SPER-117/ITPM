@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 export default function AddCategory() {
-  const [categoryId, setCategoryId] = useState("");
+  //const [categoryId, setCategoryId] = useState("");
   const [categoryName, setCategoryName] = useState("");
   const [message, setMessage] = useState("");
 
