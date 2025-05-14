@@ -9,8 +9,8 @@ function ServiceProviderLogin() {
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
 
-  const hardcodedUsername = "serviceprovider";
-  const hardcodedPassword = "password123";
+  const hardcodedUsername = "binuka_kumar";
+  const hardcodedPassword = "Binuka123#";
 
   const handleLogin = (e) => {
     e.preventDefault();
