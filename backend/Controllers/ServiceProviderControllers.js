@@ -166,6 +166,10 @@ const deletePendingServiceProvider = async (req, res, next) => {
   }
 };
 
+
+
+
+
 exports.addPendingServiceProvider = addPendingServiceProvider;
 exports.addServiceProvider = addServiceProvider;
 exports.approvePendingServiceProvider = approvePendingServiceProvider;
@@ -173,3 +177,5 @@ exports.getPendingServiceProviders = getPendingServiceProviders;
 exports.getPendingServiceProviderById = getPendingServiceProviderById;
 exports.loginServiceProvider = loginServiceProvider; 
 exports.deletePendingServiceProvider = deletePendingServiceProvider;
+
+

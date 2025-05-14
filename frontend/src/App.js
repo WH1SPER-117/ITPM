@@ -47,6 +47,7 @@ function App() {
         <Route path="/ServiceProviderVerify" element={<ServiceProviderVerify/>} />
         <Route path="/AdminLogin" element={<AdminLogin/>} />
         <Route path="/ServiceProviderDetails/:id" element={<ServiceProviderDetails />} />
+        
       </Routes>
       
     </div>

@@ -13,6 +13,9 @@ function ApproveServiceProviders() {
   const [confirmingId, setConfirmingId] = useState(null); // For approval confirmation
   const [rejectingId, setRejectingId] = useState(null); // For rejection confirmation
   const [localApproved, setLocalApproved] = useState({}); // Local checkbox state
+  const [searchTerm, setSearchTerm] = useState(''); // Search term
+  const [categoryFilter, setCategoryFilter] = useState(''); // Filter by service category
+  const [serviceFilter, setServiceFilter] = useState(''); // Filter by service type
 
   // Fetch pending service providers from backend
   useEffect(() => {
@@ -86,6 +89,20 @@ function ApproveServiceProviders() {
     }
   };
 
+  // Get unique service categories and services for dropdowns
+  const uniqueCategories = [...new Set(providers.map(provider => provider.serviceCategory))];
+  const uniqueServices = [...new Set(providers.flatMap(provider => provider.service))];
+
+  // Filter providers based on search term, category, and service
+  const filteredProviders = providers.filter(provider => {
+    const matchesSearch = 
+      provider.serviceCategory.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      provider.service.some(s => s.toLowerCase().includes(searchTerm.toLowerCase()));
+    const matchesCategory = !categoryFilter || provider.serviceCategory === categoryFilter;
+    const matchesService = !serviceFilter || provider.service.includes(serviceFilter);
+    return matchesSearch && matchesCategory && matchesService;
+  });
+
   if (loading) return <div className="text-center text-[#1e5470] mt-10">Loading...</div>;
   if (error) return <div className="text-center text-red-500 mt-10">{error}</div>;
 
@@ -93,7 +110,45 @@ function ApproveServiceProviders() {
     <div className="bg-[#d1ecff] min-h-screen flex flex-col justify-between px-6">
       <Header />
       <div className="max-w-5xl mx-auto bg-white p-10 rounded-lg shadow-2xl mt-12 mb-12">
-        <h1 className="text-4xl font-bold text-[#1e5470] text-center mb-8">Approve Service Providers</h1>
+        <h1 className="text-4xl font-bold text-[#1e5470] text-center mb-6">Approve Service Providers</h1>
+
+        {/* Search and Filter Section */}
+        <div className="mb-6 flex flex-col md:flex-row gap-4">
+          <div className="w-full md:w-1/3">
+            <input
+              type="text"
+              placeholder="Search by category or service..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#34729c] text-[#1e5470] placeholder-[#1e5470]/50"
+            />
+          </div>
+          <div className="w-full md:w-1/3">
+            <select
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#34729c] text-[#1e5470] bg-white"
+            >
+              <option value="">All Categories</option>
+              {uniqueCategories.map((category, index) => (
+                <option key={index} value={category}>{category}</option>
+              ))}
+            </select>
+          </div>
+          <div className="w-full md:w-1/3">
+            <select
+              value={serviceFilter}
+              onChange={(e) => setServiceFilter(e.target.value)}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#34729c] text-[#1e5470] bg-white"
+            >
+              <option value="">All Services</option>
+              {uniqueServices.map((service, index) => (
+                <option key={index} value={service}>{service}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
         <table className="w-full border-collapse border border-gray-300 shadow-lg">
           <thead>
             <tr className="bg-[#6cb1da] text-white">
@@ -107,7 +162,7 @@ function ApproveServiceProviders() {
             </tr>
           </thead>
           <tbody>
-            {providers.map((provider) => (
+            {filteredProviders.map((provider) => (
               <tr key={provider.pendingServiceProviderID} className="text-center border">
                 <td className="p-3 border">{provider.name}</td>
                 <td className="p-3 border">{provider.nic}</td>
@@ -142,7 +197,7 @@ function ApproveServiceProviders() {
             ))}
           </tbody>
         </table>
-        {providers.length === 0 && <p className="text-center text-[#1e5470] mt-4">No pending service providers.</p>}
+        {filteredProviders.length === 0 && <p className="text-center text-[#1e5470] mt-4">No matching service providers.</p>}
       </div>
       <Footer />
 
