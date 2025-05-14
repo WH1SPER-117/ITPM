@@ -1,6 +1,6 @@
 const ServiceCategory = require("../Model/ServiceCategory");
 
-// Create a new category
+// Create new category
 exports.createCategory = async (req, res) => {
   try {
     const { categoryId, categoryName, services } = req.body;
@@ -22,25 +22,13 @@ exports.getCategories = async (req, res) => {
   }
 };
 
-// Get all service categories with services
-exports.getCategories = async (req, res) => {
-  try {
-    const categories = await ServiceCategory.find();
-    res.status(200).json(categories);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
 // Add a service to a category
 exports.addService = async (req, res) => {
   try {
     const { categoryId, serviceId, serviceName } = req.body;
     const category = await ServiceCategory.findOne({ categoryId });
 
-    if (!category) {
-      return res.status(404).json({ error: "Category not found" });
-    }
+    if (!category) return res.status(404).json({ error: "Category not found" });
 
     category.services.push({ serviceId, serviceName });
     await category.save();
@@ -50,55 +38,33 @@ exports.addService = async (req, res) => {
   }
 };
 
-// Delete a service from a category
-exports.deleteService = async (req, res) => {
-  try {
-    const { categoryId, serviceId } = req.params;
-    const category = await ServiceCategory.findOne({ categoryId });
-
-    if (!category) {
-      return res.status(404).json({ error: "Category not found" });
-    }
-
-    category.services = category.services.filter(service => service.serviceId !== serviceId);
-    await category.save();
-    res.status(200).json(category);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-// Update a category name
+// Update category name
 exports.updateCategory = async (req, res) => {
   try {
     const { categoryId } = req.params;
     const { categoryName } = req.body;
-    
-    const category = await ServiceCategory.findOneAndUpdate(
+
+    const updated = await ServiceCategory.findOneAndUpdate(
       { categoryId },
       { categoryName },
       { new: true }
     );
 
-    if (!category) {
-      return res.status(404).json({ error: "Category not found" });
-    }
+    if (!updated) return res.status(404).json({ error: "Category not found" });
 
-    res.status(200).json(category);
+    res.status(200).json(updated);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-// Delete a category
+// Delete category
 exports.deleteCategory = async (req, res) => {
   try {
     const { categoryId } = req.params;
-    const deletedCategory = await ServiceCategory.findOneAndDelete({ categoryId });
+    const deleted = await ServiceCategory.findOneAndDelete({ categoryId });
 
-    if (!deletedCategory) {
-      return res.status(404).json({ error: "Category not found" });
-    }
+    if (!deleted) return res.status(404).json({ error: "Category not found" });
 
     res.status(200).json({ message: "Category deleted" });
   } catch (error) {
@@ -115,18 +81,19 @@ exports.updateService = async (req, res) => {
     const category = await ServiceCategory.findOne({ categoryId });
     if (!category) return res.status(404).json({ error: "Category not found" });
 
-    const service = category.services.find(service => service.serviceId === serviceId);
+    const service = category.services.find(s => s.serviceId === serviceId);
     if (!service) return res.status(404).json({ error: "Service not found" });
 
     service.serviceName = serviceName;
     await category.save();
+
     res.status(200).json(category);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-// Delete a service
+// Delete a service from a category
 exports.deleteService = async (req, res) => {
   try {
     const { categoryId, serviceId } = req.params;
@@ -134,11 +101,11 @@ exports.deleteService = async (req, res) => {
 
     if (!category) return res.status(404).json({ error: "Category not found" });
 
-    category.services = category.services.filter(service => service.serviceId !== serviceId);
+    category.services = category.services.filter(s => s.serviceId !== serviceId);
     await category.save();
+
     res.status(200).json(category);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
-
