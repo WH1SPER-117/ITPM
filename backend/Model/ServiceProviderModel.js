@@ -2,8 +2,6 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const AutoIncrement = require("mongoose-sequence")(mongoose);
 
-//assign the added mongoose to a schema
-//validations
 const ServiceProviderSchema = new Schema({
     serviceProviderID: {
         type: Number,
@@ -21,13 +19,10 @@ const ServiceProviderSchema = new Schema({
     password: { type: String, required: true },
     createdDate: {
         type: String,
-        default: Date.now, // Automatically sets the current date
-      },
+        default: () => new Date().toLocaleDateString(),
+    },
 });
 
-// Apply auto-increment to pendingServiceProviderID
 ServiceProviderSchema.plugin(AutoIncrement, { inc_field: "serviceProviderID" });
 
-
-//file name , function name
-module.exports = mongoose.model('ServiceProvider',ServiceProviderSchema);
+module.exports = mongoose.model('ServiceProvider', ServiceProviderSchema);

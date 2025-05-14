@@ -2,8 +2,6 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const AutoIncrement = require("mongoose-sequence")(mongoose);
 
-//assign the added mongoose to a schema
-//validations
 const PendingServiceProviderSchema = new Schema({
     pendingServiceProviderID: {
         type: Number,
@@ -11,30 +9,25 @@ const PendingServiceProviderSchema = new Schema({
     },
     name: { type: String, required: true },
     nic: { type: String, required: true, unique: true },
-    dob: { type: Date, required: true },
+    dob: { type: String, required: true }, // Changed to String
     address: { type: String, required: true },
     phoneNo: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     serviceCategory: { type: String, required: true },
     service: { type: [String], required: true },
-
-    //service: { type: String, required: true },
     username: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     createdDate: {
         type: String,
-        default: Date.now, // Automatically sets the current date
-      },
-      isApproved: {
+        default: () => new Date().toLocaleDateString(), // Set as string
+    },
+    isApproved: {
         type: String,
         enum: ["Yes", "No"],
-        default: "No", // Default status is "pending"
-      }   
+        default: "No",
+    }
 });
 
-// Apply auto-increment to pendingServiceProviderID
 PendingServiceProviderSchema.plugin(AutoIncrement, { inc_field: "pendingServiceProviderID" });
 
-
-//file name , function name
 module.exports = mongoose.model('PendingServiceProvider', PendingServiceProviderSchema);

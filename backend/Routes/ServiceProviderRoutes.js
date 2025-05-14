@@ -9,6 +9,6 @@ const serviceProviderController= require('../Controllers/ServiceProviderControll
 //create route path
 serviceProviderRouter.post("/register", serviceProviderController.addPendingServiceProvider);
 serviceProviderRouter.post("/addServiceProvider", serviceProviderController.addServiceProvider);
-
+serviceProviderRouter.patch("/approve/:id", serviceProviderController.approvePendingServiceProvider);
 
 module.exports = serviceProviderRouter;

@@ -49,7 +49,7 @@ function ServiceProviderSignUp() {
   };
 
   const validateForm = () => {
-    const { email, nic, phoneNo, password, confirmPassword } = formData;
+    const { email, nic, phoneNo, password, confirmPassword, service } = formData;
 
     if (!email.includes('@')) {
       alert("Enter a valid email address with '@'");
@@ -62,9 +62,9 @@ function ServiceProviderSignUp() {
     }
 
     if (!/^\+?\d+$/.test(phoneNo)) {
-        alert("Phone number must contain only numbers or start with '+' followed by numbers");
-        return false;
-      }
+      alert("Phone number must contain only numbers or start with '+' followed by numbers");
+      return false;
+    }
 
     if (password.length < 8 || !/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/\d/.test(password) || !/[^A-Za-z0-9]/.test(password)) {
       alert("Password must be at least 8 characters long and include uppercase, lowercase, number, and special character");
@@ -76,6 +76,11 @@ function ServiceProviderSignUp() {
       return false;
     }
 
+    if (service.length === 0) {
+      alert("Please select at least one service");
+      return false;
+    }
+
     return true;
   };
 
@@ -84,15 +89,18 @@ function ServiceProviderSignUp() {
 
     if (!validateForm()) return;
 
+    // Exclude confirmPassword from data sent to backend
+    const { confirmPassword, ...dataToSend } = formData;
+
     try {
-      const response = await axios.post('http://localhost:5000/serviceProviders/register', formData);
+      const response = await axios.post('http://localhost:5000/serviceProviders/register', dataToSend);
       alert('Sign-up successful! Redirecting to login.');
       console.log(response.data);
-      
+      navigate('/ServiceProviderLogin');
     } catch (error) {
       console.error('Error signing up:', error);
-      alert('Redirecting to login');
-      navigate('/ServiceProviderLogin');
+      const errorMessage = error.response?.data?.message || 'An error occurred during sign-up';
+      alert(errorMessage);
     }
   };
 
@@ -105,7 +113,7 @@ function ServiceProviderSignUp() {
           <input name="name" type="text" placeholder="Name" required className="w-full p-3 border rounded-lg" onChange={handleChange} />
           <input name="nic" type="text" placeholder="NIC" required className="w-full p-3 border rounded-lg" onChange={handleChange} />
           <input name="dob" type="date" required className="w-full p-3 border rounded-lg" onChange={handleChange} />
-          <input name="address" type="text" placeholder="Address" className="w-full p-3 border rounded-lg" onChange={handleChange} />
+          <input name="address" type="text" placeholder="Address" required className="w-full p-3 border rounded-lg" onChange={handleChange} />
           <input name="phoneNo" type="text" placeholder="Phone No." required className="w-full p-3 border rounded-lg" onChange={handleChange} />
           <input name="email" type="email" placeholder="Email" required className="w-full p-3 border rounded-lg" onChange={handleChange} />
           

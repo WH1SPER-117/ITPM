@@ -2,6 +2,7 @@
 
 const express = require("express");
 const mongoose = require("mongoose");
+const cors = require('cors');
 const router = require("./Routes/UserRoutes");
 const ServiceProviderRouter = require("./Routes/ServiceProviderRoutes");
 
@@ -10,6 +11,7 @@ const app = express();
 
 //Middleware
 app.use(express.json());
+app.use(cors()); // Enable CORS for all routes
 app.use("/users",router);
 app.use("/serviceProviders",ServiceProviderRouter);
 
