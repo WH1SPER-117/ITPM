@@ -16,31 +16,35 @@
 
 import {Routes, Route } from "react-router-dom"
 import Header from "./Components/Home/Header"
-import Home from "./Components/Home/Home"
 import Footer from "./Components/Home/Footer"
-import "./App.css"
+import "./App.css" 
+
+//Service Category Routes
 import ServiceCategories from "./Components/ServiceCatalog/ServiceCategories"
 import AddCategory from "./Components/ServiceCatalog/AddCategory"
 import UserManagement from "./Components/User/UserManagement"
+import Home from "./Components/Home/Home";
 
 
 function App() {
   return (
     <div className="flex min-h-screen flex-col">
-      
-    <Routes>
-      
-      <Route path="/" element={<UserManagement/>} />
-      <Route path="/" element={<ServiceCategories/>} />
-      <Route path="/" element={<AddCategory/>} /> 
-
-
-    </Routes>
-    
-  </div>
-    
+      <Header />
+      <Routes>
+        <Route path="/" element={<Home/>} />
+        <Route path="/ServiceCategories" element={< ServiceCategories/>} />
+        <Route path="/UserManagement" element={< UserManagement/>} />
+        {/* Add more routes as needed */}
+      </Routes>
+      <Footer />
+    </div>
    
-    
+    <div className="min-h-screen bg-lightBlue flex flex-col items-center p-6">
+      <h1 className="text-3xl font-bold text-primary mb-6">Service Catalog</h1>
+      <AddCategory />
+      <ServiceCategories />
+    </div>
+    </Router> 
   );
 
 }
