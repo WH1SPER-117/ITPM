@@ -7,7 +7,9 @@ export default function ServiceCategories() {
   const [editCategoryId, setEditCategoryId] = useState(null);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [editingService, setEditingService] = useState(null);
-  const [newServiceName, setNewServiceName] = useState("");
+  const [newServiceName, setNewServiceName] = useState(""); 
+  const [newServiceInputs, setNewServiceInputs] = useState({});
+
 
   useEffect(() => {
     fetchCategories();
@@ -62,7 +64,22 @@ export default function ServiceCategories() {
       method: "DELETE",
     });
     fetchCategories();
-  };
+  }; 
+
+  const addService = async (categoryId) => {
+  const serviceName = newServiceInputs[categoryId];
+  if (!serviceName) return;
+
+  await fetch(`http://localhost:5000/api/categories/${categoryId}/services`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ serviceName }),
+  });
+
+  setNewServiceInputs((prev) => ({ ...prev, [categoryId]: "" }));
+  fetchCategories();
+};
+
 
   const updateService = async (categoryId, serviceId) => {
     await fetch(`http://localhost:5000/api/categories/${categoryId}/services/${serviceId}`, {
@@ -142,7 +159,25 @@ export default function ServiceCategories() {
                   />
                 ) : (
                   service.serviceName
-                )}
+                )} 
+
+                <div className="flex gap-2 mt-2">
+                  <input
+                    type="text"
+                    placeholder="New service name"
+                    value={newServiceInputs[category._id] || ""}
+                    onChange={(e) =>
+                      setNewServiceInputs({ ...newServiceInputs, [category._id]: e.target.value })
+                    }
+                    className="p-1 border border-gray-300 rounded-md"
+                  />
+                  <button
+                    className="bg-green-500 text-white px-3 py-1 rounded-md"
+                    onClick={() => addService(category._id)}
+                  >
+                    Add Service
+                  </button>
+                </div>
 
                 <div className="flex gap-2">
                   {editingService === service._id ? (
