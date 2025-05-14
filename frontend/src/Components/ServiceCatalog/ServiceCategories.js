@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 
 export default function ServiceCategories() {
   const [categories, setCategories] = useState([]);
+  const [filteredCategories, setFilteredCategories] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [editCategoryId, setEditCategoryId] = useState(null);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [editingService, setEditingService] = useState(null);
@@ -11,10 +13,38 @@ export default function ServiceCategories() {
     fetchCategories();
   }, []);
 
+  useEffect(() => {
+    handleSearch(searchTerm);
+  }, [categories, searchTerm]);
+
   const fetchCategories = async () => {
     const res = await fetch("http://localhost:5000/api/categories");
     const data = await res.json();
     setCategories(data);
+  };
+
+  const handleSearch = (term) => {
+    const lowerTerm = term.toLowerCase();
+
+    const filtered = categories
+      .map((category) => {
+        const matchedServices = category.services.filter((service) =>
+          service.serviceName.toLowerCase().includes(lowerTerm)
+        );
+
+        const categoryMatch = category.categoryName.toLowerCase().includes(lowerTerm);
+
+        if (categoryMatch || matchedServices.length > 0) {
+          return {
+            ...category,
+            services: matchedServices.length > 0 || categoryMatch ? matchedServices : [],
+          };
+        }
+        return null;
+      })
+      .filter(Boolean);
+
+    setFilteredCategories(filtered);
   };
 
   const updateCategory = async (categoryId) => {
@@ -54,7 +84,16 @@ export default function ServiceCategories() {
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold text-darkBlue mb-4">Service Categories</h2>
-      {categories.map((category) => (
+
+      <input
+        type="text"
+        placeholder="Search categories or services..."
+        className="w-full p-2 mb-4 border border-gray-300 rounded-md"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
+
+      {(searchTerm ? filteredCategories : categories).map((category) => (
         <div key={category._id} className="bg-softBlue p-4 rounded-lg shadow-lg mb-3">
           {editCategoryId === category._id ? (
             <div className="flex gap-2">
