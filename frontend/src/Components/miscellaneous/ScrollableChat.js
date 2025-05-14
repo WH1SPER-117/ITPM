@@ -16,6 +16,26 @@ const ScrollableChat = ({ messages }) => {
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
+  // Function to detect URLs and make them clickable
+  const renderMessageContent = (content) => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    return content.split(urlRegex).map((part, index) =>
+      urlRegex.test(part) ? (
+        <a
+          key={index}
+          href={part}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: "#1e90ff", textDecoration: "underline" }}
+        >
+          {part}
+        </a>
+      ) : (
+        part
+      )
+    );
+  };
+
   return React.createElement(
     ScrollableFeed,
     null,
@@ -53,7 +73,7 @@ const ScrollableChat = ({ messages }) => {
                   alt: m.sender.name,
                   className: "rounded-circle me-1 mt-2",
                   style: { width: "30px", height: "30px", cursor: "pointer" },
-                  title: m.sender.name, // Simplified tooltip
+                  title: m.sender.name,
                 }),
               React.createElement(
                 "div",
@@ -73,7 +93,8 @@ const ScrollableChat = ({ messages }) => {
                 React.createElement(
                   "span",
                   null,
-                  `${m.sender.name || "Unknown"}: ${m.content}`
+                  `${m.sender.name || "Unknown"}: `,
+                  renderMessageContent(m.content)
                 ),
                 React.createElement(
                   "small",

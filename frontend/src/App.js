@@ -24,6 +24,8 @@ import "./App.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ChatPage from "./Pages/ChatPage";
+import Room from "./Components/Room/Room";
+
 function App() {
   return (
     <div className="flex min-h-screen flex-col">
@@ -31,6 +33,7 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route path="/home" element={<Home />} />
         <Route path="/chatpage" element={<ChatPage />} />
+        <Route path="/room/:roomId" element={<Room />} />
       </Routes>
       <ToastContainer />
     </div>

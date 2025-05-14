@@ -91,3 +91,31 @@ io.on("connection", (socket) => {
     socket.leave(userData._id);
   });
 });
+
+//video calling
+/*
+const { ZegoUIKitPrebuilt } = require("@zegocloud/zego-uikit-prebuilt");
+
+app.use(express.json());
+
+app.post("/generate-token", (req, res) => {
+  const { appID, userID, roomID } = req.body;
+  try {
+    const token = ZegoUIKitPrebuilt.generateKitTokenForTest(
+      appID,
+      "fbf6788e69e54fa898d3123d6159aa6f", // Your serverSecret
+      roomID,
+      userID,
+      Date.now().toString()
+    );
+    res.json({ token });
+  } catch (error) {
+    console.error("Token generation failed:", error);
+    res.status(500).json({ error: "Failed to generate token" });
+  }
+});
+
+app.listen(5000, () => {
+  console.log("Server running on port 5000");
+});
+*/

@@ -32,7 +32,7 @@ export default function Header() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <Link to="/" className="flex items-center gap-2 group">
+          <Link to="/home" className="flex items-center gap-2 group">
             <div className="rounded-full bg-blue-50 p-1 transition-all duration-100 group-hover:bg-blue">
               <motion.div
                 // animate={{ rotate: [0, 360] }}
@@ -183,6 +183,7 @@ export default function Header() {
                 "Home",
                 "Services",
                 "About Us",
+                "V-Assist",
                 "Contact Us",
                 "Terms of Use",
               ].map((item, index) => (
@@ -196,6 +197,17 @@ export default function Header() {
                     to={
                       item === "Home"
                         ? "/"
+                        : `#${item.toLowerCase().replace(/\s+/g, "-")}`
+                    }
+                    className="text-blue-dark block py-2 hover:text-blue-medium transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {item}
+                  </Link>
+                  <Link
+                    to={
+                      item === "V-Assist"
+                        ? "/chatpage"
                         : `#${item.toLowerCase().replace(/\s+/g, "-")}`
                     }
                     className="text-blue-dark block py-2 hover:text-blue-medium transition-colors"

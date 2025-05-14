@@ -8,6 +8,7 @@ import { ChatState } from "../Context/ChatProvider";
 import ScrollableChat from "./miscellaneous/ScrollableChat";
 import ProfileModal from "./miscellaneous/ProfileModel";
 import UpdateGroupChatModal from "./miscellaneous/UpdateGroupChatModal";
+import { useNavigate } from "react-router-dom";
 
 const ENDPOINT = "http://localhost:5000";
 let socket, selectedChatCompare;
@@ -22,6 +23,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   const { selectedChat, setSelectedChat, user, notification, setNotification } =
     ChatState();
+
+  const navigate = useNavigate();
 
   const defaultOptions = {
     loop: true,
@@ -45,14 +48,14 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       right: 10px;
       z-index: 1050;
       display: flex;
-      justify-content: space-between;
+  justify-content: space-between;
       align-items: center;
       opacity: 1;
       transition: opacity 0.5s;
     `;
     alert.innerHTML = `
       <span><strong>${options.title}</strong> ${options.description}</span>
-      <button type="button" style="background: none; border: none; font-size: 1.2rem; cursor: pointer;">&times;</button>
+      <button type="button" style="background: none; border: none; font-size: 1.2rem; cursor: pointer;">×</button>
     `;
     document.body.appendChild(alert);
     setTimeout(() => alert.remove(), options.duration || 5000);
@@ -99,11 +102,12 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             Authorization: `Bearer ${user.token}`,
           },
         };
+        const messageContent = newMessage;
         setNewMessage("");
         const { data } = await axios.post(
           "http://localhost:5000/message",
           {
-            content: newMessage,
+            content: messageContent,
             chatId: selectedChat,
           },
           config
@@ -142,6 +146,42 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         setTyping(false);
       }
     }, timerLength);
+  };
+
+  // Handle video call button click
+  const handleVideoCall = async () => {
+    const roomId = Date.now().toString();
+    const callLink = `${window.location.origin}/room/${roomId}`;
+    const messageContent = `Join my video call: ${callLink}`;
+
+    try {
+      const config = {
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+      const { data } = await axios.post(
+        "http://localhost:5000/message",
+        {
+          content: messageContent,
+          chatId: selectedChat,
+        },
+        config
+      );
+      socket.emit("new message", data);
+      setMessages([...messages, data]);
+      navigate(`/room/${roomId}`);
+    } catch (error) {
+      toast({
+        title: "Error Occured!",
+        description: "Failed to initiate video call",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+    }
   };
 
   useEffect(() => {
@@ -210,6 +250,14 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                   />
                 </div>
               ))}
+
+            {/* Video Call Button */}
+            <button
+              className="btn btn-outline-secondary"
+              onClick={handleVideoCall}
+            >
+              <i className="fas fa-video"></i>
+            </button>
           </div>
 
           <div
