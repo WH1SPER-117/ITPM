@@ -94,9 +94,9 @@ function ServiceProviderSignUp() {
 
     try {
       const response = await axios.post('http://localhost:5000/serviceProviders/register', dataToSend);
-      alert('Sign-up successful! Redirecting to login.');
+      alert('Sign-up successful! Redirecting to verification page.');
       console.log(response.data);
-      navigate('/ServiceProviderLogin');
+      navigate('/ServiceProviderVerify');
     } catch (error) {
       console.error('Error signing up:', error);
       const errorMessage = error.response?.data?.message || 'An error occurred during sign-up';

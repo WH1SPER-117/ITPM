@@ -107,6 +107,51 @@ const approvePendingServiceProvider = async (req, res, next) => {
     }
 };
 
+// Fetch all pending service providers
+const getPendingServiceProviders = async (req, res, next) => {
+  try {
+    const pendingProviders = await PendingServiceProvider.find({ isApproved: "No" });
+    return res.status(200).json(pendingProviders);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Failed to fetch pending service providers", error: err.message });
+  }
+};
+
+// Fetch details of a specific pending service provider
+const getPendingServiceProviderById = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const provider = await PendingServiceProvider.findOne({ pendingServiceProviderID: id });
+    if (!provider) {
+      return res.status(404).json({ message: "Pending service provider not found" });
+    }
+    return res.status(200).json(provider);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Failed to fetch provider details", error: err.message });
+  }
+};
+
+// Login service provider
+const loginServiceProvider = async (req, res, next) => {
+  const { username, password } = req.body;
+
+  try {
+    const provider = await ServiceProvider.findOne({ username, password });
+    if (!provider) {
+      return res.status(401).json({ message: "Invalid username or password" });
+    }
+    return res.status(200).json({ message: "Login successful", provider });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Failed to login", error: err.message });
+  }
+};
+
 exports.addPendingServiceProvider = addPendingServiceProvider;
 exports.addServiceProvider = addServiceProvider;
 exports.approvePendingServiceProvider = approvePendingServiceProvider;
+exports.getPendingServiceProviders = getPendingServiceProviders;
+exports.getPendingServiceProviderById = getPendingServiceProviderById;
+exports.loginServiceProvider = loginServiceProvider; 

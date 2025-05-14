@@ -10,5 +10,10 @@ const serviceProviderController= require('../Controllers/ServiceProviderControll
 serviceProviderRouter.post("/register", serviceProviderController.addPendingServiceProvider);
 serviceProviderRouter.post("/addServiceProvider", serviceProviderController.addServiceProvider);
 serviceProviderRouter.patch("/approve/:id", serviceProviderController.approvePendingServiceProvider);
+serviceProviderRouter.get("/pending", serviceProviderController.getPendingServiceProviders); 
+serviceProviderRouter.get("/pending/:id", serviceProviderController.getPendingServiceProviderById); 
+serviceProviderRouter.post("/login", serviceProviderController.loginServiceProvider);
 
 module.exports = serviceProviderRouter;
+
+

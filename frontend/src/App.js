@@ -27,6 +27,9 @@ import ServiceProviderLogin from "./Components/ServiceProvider/ServiceProviderLo
 import ServiceProviderProfile from "./Components/ServiceProvider/ServiceProviderProfile"
 import AdminDashboard from "./Components/ServiceProvider/AdminDashboard"
 import ApproveServiceProviders from "./Components/ServiceProvider/ApproveServiceProviders"
+import ServiceProviderVerify from "./Components/ServiceProvider/ServiceProviderVerify"
+import AdminLogin from "./Components/ServiceProvider/AdminLogin"
+import ServiceProviderDetails from "./Components/ServiceProvider/ServiceProviderDetails"
 
 function App() {
   return (
@@ -41,6 +44,9 @@ function App() {
         <Route path="/ServiceProviderProfile" element={<ServiceProviderProfile/>} />
         <Route path="/AdminDashboard" element={<AdminDashboard/>} />
         <Route path="/ApproveServiceProviders" element={<ApproveServiceProviders/>} />
+        <Route path="/ServiceProviderVerify" element={<ServiceProviderVerify/>} />
+        <Route path="/AdminLogin" element={<AdminLogin/>} />
+        <Route path="/ServiceProviderDetails/:id" element={<ServiceProviderDetails />} />
       </Routes>
       
     </div>

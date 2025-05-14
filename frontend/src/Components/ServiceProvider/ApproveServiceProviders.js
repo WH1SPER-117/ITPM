@@ -1,22 +1,69 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '../Home/Header';
 import Footer from '../Home/Footer';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function ApproveServiceProviders() {
   const navigate = useNavigate();
-  const [providers, setProviders] = useState([
-    { id: 1, name: 'Binuka Kumar', nic: '2234567780V', email: 'binuka@gmail.com', address: '12 Temple Street, Colombo', phone: '+94775541887', approved: false },
-    { id: 2, name: 'Kamal Silva', nic: '987654321V', email: 'kamal@gmail.com', address: '23 Flower Rd, Kandy', phone: '+94776543210', approved: false },
-    { id: 3, name: 'Nimal Fernando', nic: '456123789V', email: 'nimal@gmail.com', address: '78 Park Avenue, Galle', phone: '+94779876543', approved: false },
-    { id: 4, name: 'Sunil Jayasuriya', nic: '741852963V', email: 'sunil@gmail.com', address: '12 High Street, Negombo', phone: '+94775551234', approved: false }
-  ]);
+  const [providers, setProviders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [confirmingId, setConfirmingId] = useState(null); // Track the ID being confirmed
+  const [localApproved, setLocalApproved] = useState({}); // Local checkbox state
 
-  const toggleApproval = (id) => {
-    setProviders(providers.map(provider => 
-      provider.id === id ? { ...provider, approved: !provider.approved } : provider
-    ));
+  // Fetch pending service providers from backend
+  useEffect(() => {
+    const fetchProviders = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/serviceProviders/pending');
+        setProviders(response.data);
+        // Initialize localApproved state based on fetched data
+        const initialApproved = response.data.reduce((acc, provider) => ({
+          ...acc,
+          [provider.pendingServiceProviderID]: provider.isApproved === "Yes",
+        }), {});
+        setLocalApproved(initialApproved);
+      } catch (err) {
+        setError('Failed to fetch pending service providers');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProviders();
+  }, []);
+
+  // Toggle approval status with confirmation
+  const toggleApproval = async (id) => {
+    setConfirmingId(id); // Show confirmation modal
   };
+
+  // Handle confirmation result
+  const handleConfirmation = async (confirmed, id) => {
+    setConfirmingId(null); // Hide modal
+    if (!confirmed) {
+      setLocalApproved(prev => ({ ...prev, [id]: false })); // Revert checkbox if canceled
+      return;
+    }
+
+    // Optimistic update: Set local state to approved while waiting for backend
+    setLocalApproved(prev => ({ ...prev, [id]: true }));
+    try {
+      const response = await axios.patch(`http://localhost:5000/serviceProviders/approve/${id}`, { isApproved: "Yes" });
+      if (response.status === 201) {
+        setProviders(providers.filter(provider => provider.pendingServiceProviderID !== id));
+        alert('Service provider approved and moved to ServiceProvider collection!');
+      }
+    } catch (err) {
+      setError('Failed to approve service provider');
+      setLocalApproved(prev => ({ ...prev, [id]: false })); // Revert on failure
+      console.error(err);
+    }
+  };
+
+  if (loading) return <div className="text-center text-[#1e5470] mt-10">Loading...</div>;
+  if (error) return <div className="text-center text-red-500 mt-10">{error}</div>;
 
   return (
     <div className="bg-[#d1ecff] min-h-screen flex flex-col justify-between px-6">
@@ -36,23 +83,58 @@ function ApproveServiceProviders() {
           </thead>
           <tbody>
             {providers.map((provider) => (
-              <tr key={provider.id} className="text-center border">
+              <tr key={provider.pendingServiceProviderID} className="text-center border">
                 <td className="p-3 border">{provider.name}</td>
                 <td className="p-3 border">{provider.nic}</td>
                 <td className="p-3 border">{provider.email}</td>
-                <td className="p-3 border">{provider.phone}</td>
+                <td className="p-3 border">{provider.phoneNo}</td>
                 <td className="p-3 border">
-                  <input type="checkbox" checked={provider.approved} onChange={() => toggleApproval(provider.id)} />
+                  <input
+                    type="checkbox"
+                    checked={localApproved[provider.pendingServiceProviderID] || provider.isApproved === "Yes"}
+                    onChange={() => toggleApproval(provider.pendingServiceProviderID)}
+                    disabled={provider.isApproved === "Yes"}
+                  />
                 </td>
                 <td className="p-3 border">
-                  <button className="text-[#34729c] underline" onClick={() => navigate(`/provider-details/${provider.id}`)}>View More</button>
+                  <button
+                    className="text-[#34729c] underline hover:text-[#6ec1d1] transition duration-300"
+                    onClick={() => navigate(`/ServiceProviderDetails/${provider.pendingServiceProviderID}`)}
+                  >
+                    View More
+                  </button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
+        {providers.length === 0 && <p className="text-center text-[#1e5470] mt-4">No pending service providers.</p>}
       </div>
       <Footer />
+
+      {/* Confirmation Modal */}
+      {confirmingId && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-2xl max-w-md w-full">
+            <h2 className="text-2xl font-bold text-[#1e5470] mb-4">Confirm Approval</h2>
+            <p className="text-[#1e5470] mb-6">Are you sure you want to approve this service provider? This action cannot be undone.</p>
+            <div className="flex justify-end gap-4">
+              <button
+                className="bg-[#6cb1da] text-white py-2 px-4 rounded-lg hover:bg-[#6ec1d1] transition duration-300"
+                onClick={() => handleConfirmation(true, confirmingId)}
+              >
+                Yes, Approve
+              </button>
+              <button
+                className="bg-[#34729c] text-white py-2 px-4 rounded-lg hover:bg-[#6ec1d1] transition duration-300"
+                onClick={() => handleConfirmation(false, confirmingId)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

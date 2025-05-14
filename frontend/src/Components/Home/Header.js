@@ -5,6 +5,8 @@ import { Link } from "react-router-dom"
 import { Search, Menu, X, CheckCircle } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import flogo from "../../Assets/F-logo.png";
+import AdminLogin from "../ServiceProvider/AdminLogin"
+import ServiceProviderLogin from "../ServiceProvider/ServiceProviderLogin"; 
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false)
@@ -47,7 +49,7 @@ export default function Header() {
         </motion.div>
 
         <nav className="hidden md:flex items-center gap-6">
-          {["Home", "Services", "About Us", "Contact Us", "Terms of Use"].map((item, index) => (
+          {["Home", "Services", "About Us", "Contact Us", "Service Providers", "Admin"].map((item, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: -10 }}
@@ -55,7 +57,16 @@ export default function Header() {
               transition={{ duration: 0.3, delay: index * 0.1 }}
             >
               <Link
-                to={item === "Home" ? "/" : `#${item.toLowerCase().replace(/\s+/g, "-")}`}
+                //to={item === "Home" ? "/" : `#${item.toLowerCase().replace(/\s+/g, "-")}`}
+                to={
+                  item === "Admin"
+                    ? "/AdminLogin"
+                    : item === "Service Providers"
+                    ? "/ServiceProviderLogin"
+                    : item === "Home"
+                    ? "/"
+                    : `#${item.toLowerCase().replace(/\s+/g, "-")}`
+                }
                 className={`text-sm font-medium relative overflow-hidden group ${
                   index === 0 ? "text-blue-medium" : "text-blue-dark"
                 }`}
