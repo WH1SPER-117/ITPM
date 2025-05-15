@@ -34,7 +34,9 @@ const serviceCategorySchema = new mongoose.Schema({
       },
       message: "Duplicate serviceId found in services."
     }
-  }
+  },
+  clickCount: { type: Number, default: 0 }
+  
 }, { timestamps: true });
 
 module.exports = mongoose.model("ServiceCategory", serviceCategorySchema);

@@ -10,6 +10,7 @@ router.put("/:categoryId", serviceCategoryController.updateCategory);
 router.delete("/:categoryId", serviceCategoryController.deleteCategory);
 router.put("/:categoryId/services/:serviceId", serviceCategoryController.updateService);
 router.delete("/:categoryId/services/:serviceId", serviceCategoryController.deleteService);
-
+router.patch('/click/:categoryId', controller.incrementClickCount);
+router.get('/report/pdf', controller.generateReport);
 
 module.exports = router;

@@ -1,4 +1,6 @@
 const ServiceCategory = require("../Model/ServiceCategory");
+const PDFDocument = require('pdfkit');
+const fs = require('fs');
 
 // Create new category
 exports.createCategory = async (req, res) => {
@@ -115,5 +117,30 @@ exports.deleteService = async (req, res) => {
     res.status(200).json(category);
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+}; 
+
+//Generate a downloadable pdf
+exports.generateReport = async (req, res) => {
+  try {
+    const categories = await ServiceCategory.find().sort({ clickCount: -1 });
+
+    const doc = new PDFDocument();
+    const filename = 'Service_Popularity_Report.pdf';
+    const stream = fs.createWriteStream(`./reports/${filename}`);
+    doc.pipe(stream);
+
+    doc.fontSize(20).text('Service Popularity Report', { align: 'center' }).moveDown();
+    categories.forEach(cat => {
+      doc.fontSize(14).text(`${cat.categoryName}: ${cat.clickCount} clicks`);
+    });
+
+    doc.end();
+
+    stream.on('finish', () => {
+      res.download(`./reports/${filename}`);
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 };
