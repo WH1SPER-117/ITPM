@@ -2,16 +2,15 @@
 
 const express = require("express");
 const mongoose = require("mongoose");
-const router = require("./Routes/UserRoutes");
-const ServiceProviderRouter = require("./Routes/ServiceProviderRoutes");
+const serviceCatalogRoutes = require("./Routes/ServiceCatalogRoutes");
 
 
 const app = express();
 
 //Middleware
 app.use(express.json());
-app.use("/users",router);
-app.use("/serviceProviders",ServiceProviderRouter);
+app.use("/api", serviceCatalogRoutes);
+
 
 
 
