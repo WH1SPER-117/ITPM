@@ -7,12 +7,12 @@ function ServiceProviderProfile() {
   const navigate = useNavigate();
   const serviceProvider = {
     id: 9,
-    name: "Binuka Kumar",
-    nic: "2234567780V",
-    dob: "2013-05-15",
+    name: "Saman Peries",
+    nic: "2234567781V",
+    dob: "2016-05-15",
     address: "12 Temple Street, Colombo",
     phoneNo: "+94775541887",
-    email: "binuka@gmail.com",
+    email: "samanperies@gmail.com",
     serviceCategory: "Electrical",
     services: ["Wiring", "Safety Inspections"],
   };
