@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
+import axios from "axios";
 
 export default function ServiceCategories() {
   const [categories, setCategories] = useState([]);
@@ -17,13 +18,21 @@ export default function ServiceCategories() {
 
   useEffect(() => {
     handleSearch(searchTerm);
-  }, [categories, searchTerm]);
+  }, [categories, searchTerm]); 
+
+  useEffect(() => {
+    axios.get("http://localhost:5000/category").then((res) => {
+      setCategories(res.data);
+    });
+  }, []);
 
   const fetchCategories = async () => {
     const res = await fetch("http://localhost:5000/api/categories");
     const data = await res.json();
     setCategories(data);
   };
+
+  const navigate = useNavigate();
 
   const handleSearch = (term) => {
     const lowerTerm = term.toLowerCase();
@@ -47,26 +56,33 @@ export default function ServiceCategories() {
       .filter(Boolean);
 
     setFilteredCategories(filtered);
-  }; 
-
-  const ServiceCategories = ({ categories }) => {
-    const navigate = useNavigate();
-
-    const handleCategoryClick = (category) => {
-      navigate(`/request-service/${category.categoryName}`);
-    };
-
-    return (
-      <div>
-        {categories.map((cat) => (
-          <button key={cat._id} onClick={() => handleCategoryClick(cat)}>
-            {cat.categoryName}
-          </button>
-        ))}
-      </div>
-    );
   };
 
+  const handleCategoryClick = async (id) => {
+  try {
+    await axios.patch(`http://localhost:5000/category/click/${id}`);
+    window.location.href = `/customer-details/${id}`;
+  } catch (err) {
+    console.error(err);
+    }
+  };
+
+  const downloadReport = async () => {
+  try {
+    const response = await axios.get("http://localhost:5000/category/report/pdf", {
+      responseType: 'blob',
+    });
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "Service_Popularity_Report.pdf");
+    document.body.appendChild(link);
+    link.click();
+  } catch (error) {
+    console.error("Error downloading report:", error);
+  }
+};
+  
   const updateCategory = async (categoryId) => {
     await fetch(`http://localhost:5000/api/categories/${categoryId}`, {
       method: "PUT",
@@ -137,7 +153,6 @@ export default function ServiceCategories() {
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
       />
-
       {(searchTerm ? filteredCategories : categories).map((category) => (
         <div key={category._id} className="bg-softBlue p-4 rounded-lg shadow-lg mb-3">
           {editCategoryId === category._id ? (
@@ -157,7 +172,6 @@ export default function ServiceCategories() {
           ) : (
             <h3 className="text-xl font-semibold text-primary">{category.categoryName}</h3>
           )}
-
           <div className="flex gap-2 mt-2">
             <button
               className="text-white bg-secondary px-2 py-1 rounded-md"
@@ -175,7 +189,6 @@ export default function ServiceCategories() {
               Delete
             </button>
           </div>
-
           <ul className="list-disc pl-6 text-darkBlue mt-2">
             {category.services.map((service) => (
               <li key={service._id} className="flex justify-between items-center">
@@ -187,8 +200,7 @@ export default function ServiceCategories() {
                   />
                 ) : (
                   service.serviceName
-                )} 
-
+                )}
                 <div className="flex gap-2 mt-2">
                   <input
                     type="text"
@@ -206,7 +218,6 @@ export default function ServiceCategories() {
                     Add Service
                   </button>
                 </div>
-
                 <div className="flex gap-2">
                   {editingService === service._id ? (
                     <button
@@ -238,6 +249,14 @@ export default function ServiceCategories() {
           </ul>
         </div>
       ))}
+    <div className="mt-6 flex justify-center">
+      <button
+        onClick={downloadReport}
+        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md shadow-md"
+      >
+      Download Service Popularity Report
+      </button>
     </div>
+  </div>
   );
 }
