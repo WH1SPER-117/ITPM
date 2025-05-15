@@ -16,14 +16,16 @@
 
 import {Routes, Route } from "react-router-dom"
 import Header from "./Components/Home/Header"
+import Home from "./Components/Home/Home"
 import Footer from "./Components/Home/Footer"
-import "./App.css" 
+import "./App.css"; 
 
 //Service Category Routes
 import ServiceCategories from "./Components/ServiceCatalog/ServiceCategories"
 import AddCategory from "./Components/ServiceCatalog/AddCategory"
-import UserManagement from "./Components/User/UserManagement"
-import Home from "./Components/Home/Home";
+import RequestServiceForm from "./Components/ServiceCatalog/RequestServiceForm";
+import UserManagement from "./Components/User/UserManagement";
+
 
 
 function App() {
@@ -34,6 +36,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/ServiceCategories" element={<ServiceCategories />} />
         <Route path="/AddCategory" element={<AddCategory />} />
+        <Route path="/RequestService" element={<RequestServiceForm/>} />
         <Route path="/UserManagement" element={<UserManagement />} />
         {/* Add more routes as needed */}
       </Routes>
@@ -47,5 +50,5 @@ function App() {
 
 }
 
-export default App
+export default App;
 

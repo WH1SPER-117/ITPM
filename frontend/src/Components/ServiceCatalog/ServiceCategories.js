@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
 
 export default function ServiceCategories() {
   const [categories, setCategories] = useState([]);
@@ -9,8 +10,7 @@ export default function ServiceCategories() {
   const [editingService, setEditingService] = useState(null);
   const [newServiceName, setNewServiceName] = useState(""); 
   const [newServiceInputs, setNewServiceInputs] = useState({});
-
-
+  
   useEffect(() => {
     fetchCategories();
   }, []);
@@ -47,6 +47,24 @@ export default function ServiceCategories() {
       .filter(Boolean);
 
     setFilteredCategories(filtered);
+  }; 
+
+  const ServiceCategories = ({ categories }) => {
+    const navigate = useNavigate();
+
+    const handleCategoryClick = (category) => {
+      navigate(`/request-service/${category.categoryName}`);
+    };
+
+    return (
+      <div>
+        {categories.map((cat) => (
+          <button key={cat._id} onClick={() => handleCategoryClick(cat)}>
+            {cat.categoryName}
+          </button>
+        ))}
+      </div>
+    );
   };
 
   const updateCategory = async (categoryId) => {
