@@ -33,6 +33,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/ServiceCategories" element={<ServiceCategories />} />
+        <Route path="/AddCategory" element={<AddCategory />} />
         <Route path="/UserManagement" element={<UserManagement />} />
         {/* Add more routes as needed */}
       </Routes>
