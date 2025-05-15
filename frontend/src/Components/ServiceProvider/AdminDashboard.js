@@ -18,7 +18,9 @@ function AdminDashboard() {
           <button className="bg-[#6cb1da] text-white p-6 rounded-lg text-xl font-semibold shadow-md hover:bg-[#6ec1d1] transition duration-300">
             Service Catalog Management
           </button>
-          <button className="bg-[#6cb1da] text-white p-6 rounded-lg text-xl font-semibold shadow-md hover:bg-[#6ec1d1] transition duration-300">
+          <button 
+          onClick={() => navigate('/ServiceProviderReports')}
+          className="bg-[#6cb1da] text-white p-6 rounded-lg text-xl font-semibold shadow-md hover:bg-[#6ec1d1] transition duration-300">
             Reports
           </button>
           <button className="bg-[#6cb1da] text-white p-6 rounded-lg text-xl font-semibold shadow-md hover:bg-[#6ec1d1] transition duration-300">

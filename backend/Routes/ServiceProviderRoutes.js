@@ -15,6 +15,8 @@ serviceProviderRouter.get("/pending/:id", serviceProviderController.getPendingSe
 serviceProviderRouter.post("/login", serviceProviderController.loginServiceProvider);
 serviceProviderRouter.delete("/pending/:id", serviceProviderController.deletePendingServiceProvider);
 
+serviceProviderRouter.get("/service-categories", serviceProviderController.getServiceCategories);
+serviceProviderRouter.post("/service-provider-report", serviceProviderController.generateServiceProviderReport);
 
 module.exports = serviceProviderRouter;
 

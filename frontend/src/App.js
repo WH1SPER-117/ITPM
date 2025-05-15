@@ -30,6 +30,7 @@ import ApproveServiceProviders from "./Components/ServiceProvider/ApproveService
 import ServiceProviderVerify from "./Components/ServiceProvider/ServiceProviderVerify"
 import AdminLogin from "./Components/ServiceProvider/AdminLogin"
 import ServiceProviderDetails from "./Components/ServiceProvider/ServiceProviderDetails"
+import ServiceProviderReports from "./Components/ServiceProvider/ServiceProviderReports"
 
 function App() {
   return (
@@ -47,6 +48,7 @@ function App() {
         <Route path="/ServiceProviderVerify" element={<ServiceProviderVerify/>} />
         <Route path="/AdminLogin" element={<AdminLogin/>} />
         <Route path="/ServiceProviderDetails/:id" element={<ServiceProviderDetails />} />
+        <Route path="/ServiceProviderReports" element={<ServiceProviderReports />} />
         
       </Routes>
       

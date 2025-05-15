@@ -26,3 +26,4 @@ const ServiceProviderSchema = new Schema({
 ServiceProviderSchema.plugin(AutoIncrement, { inc_field: "serviceProviderID" });
 
 module.exports = mongoose.model('ServiceProvider', ServiceProviderSchema);
+

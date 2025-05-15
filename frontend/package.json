@@ -7,8 +7,9 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
     "@testing-library/user-event": "^13.5.0",
-    "axios": "^1.8.4",
+    "axios": "^1.9.0",
     "framer-motion": "^12.5.0",
+    "jspdf": "^3.0.1",
     "lucide-react": "^0.483.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -22,7 +23,6 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "proxy": "http://localhost:5000"
-
   },
   "eslintConfig": {
     "extends": [
@@ -45,6 +45,4 @@
   "devDependencies": {
     "tailwindcss": "^3.4.17"
   }
-
-  
 }

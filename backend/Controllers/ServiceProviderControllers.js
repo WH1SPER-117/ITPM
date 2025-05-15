@@ -166,6 +166,81 @@ const deletePendingServiceProvider = async (req, res, next) => {
   }
 };
 
+// Get unique service categories
+const getServiceCategories = async (req, res) => {
+    try {
+        const categories = await ServiceProvider.distinct('serviceCategory');
+        res.status(200).json(categories);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error fetching categories', error: error.message });
+    }
+};
+
+// Generate service provider report
+const generateServiceProviderReport = async (req, res) => {
+    const { categories } = req.body;
+    try {
+        const query = categories.length > 0 ? { serviceCategory: { $in: categories } } : {};
+
+        // Aggregate to get count of providers per category
+        const countData = await ServiceProvider.aggregate([
+            { $match: query },
+            {
+                $group: {
+                    _id: '$serviceCategory',
+                    count: { $sum: 1 },
+                },
+            },
+            {
+                $project: {
+                    category: '$_id',
+                    count: 1,
+                    _id: 0,
+                },
+            },
+            { $sort: { category: 1 } },
+        ]);
+
+        // Fetch detailed provider information for each category
+        const providerData = await ServiceProvider.find(query, {
+            name: 1,
+            serviceCategory: 1,
+            email: 1,
+            phoneNo: 1,
+            service: 1,
+            createdDate: 1,
+            _id: 0,
+        }).sort({ serviceCategory: 1 });
+
+        // Group providers by category for easier frontend processing
+        const providersByCategory = providerData.reduce((acc, provider) => {
+            const category = provider.serviceCategory;
+            if (!acc[category]) {
+                acc[category] = [];
+            }
+            acc[category].push({
+                name: provider.name,
+                email: provider.email,
+                phoneNo: provider.phoneNo,
+                service: provider.service,
+                createdDate: provider.createdDate,
+            });
+            return acc;
+        }, {});
+
+        const totalProviders = countData.reduce((sum, item) => sum + item.count, 0);
+
+        res.status(200).json({
+            categories: countData,
+            providersByCategory,
+            totalProviders,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error generating report', error: error.message });
+    }
+};
 
 
 
@@ -177,5 +252,8 @@ exports.getPendingServiceProviders = getPendingServiceProviders;
 exports.getPendingServiceProviderById = getPendingServiceProviderById;
 exports.loginServiceProvider = loginServiceProvider; 
 exports.deletePendingServiceProvider = deletePendingServiceProvider;
+exports.getServiceCategories = getServiceCategories; // New export
+exports.generateServiceProviderReport = generateServiceProviderReport;
+
 
 
