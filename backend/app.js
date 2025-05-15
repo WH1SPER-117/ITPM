@@ -16,18 +16,14 @@ app.use("/ServiceCategory", serviceCategoryRoutes );
 app.use('/api/service-requests', serviceRequestRoutes);
 
 // MongoDB Connection
-mongoose.connect("mongodb+srv://admin:queickfixeradmin123@quickfixer.w5ect.mongodb.net/")
-.then(()=> console.log("Connected to MongoDB"))
-.then(()=>{
-    app.listen(5000);
-})
-.catch((err)=> console.log((err)));
-// Routes
-
-// Server Port
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(` Server running on port ${PORT}`);
-});
+mongoose
+  .connect("mongodb+srv://admin:queickfixeradmin123@quickfixer.w5ect.mongodb.net/")
+  .then(() => {
+    console.log("Connected to MongoDB");
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  })
+  .catch((err) => console.log(err));
 
 

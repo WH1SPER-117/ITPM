@@ -36,7 +36,9 @@ const serviceCategorySchema = new mongoose.Schema({
     }
   },
   clickCount: { type: Number, default: 0 }
-  
 }, { timestamps: true });
+
+const ServiceCategory = require("../Model/ServiceCategory");
+console.log(ServiceCategory); // Should log the Mongoose model
 
 module.exports = mongoose.model("ServiceCategory", serviceCategorySchema);

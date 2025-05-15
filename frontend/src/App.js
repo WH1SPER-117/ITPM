@@ -38,7 +38,7 @@ function App() {
         <Route path="/AddCategory" element={<AddCategory />} />
         <Route path="/RequestService" element={<RequestServiceForm/>} />
         <Route path="/UserManagement" element={<UserManagement />} />
-        <Route path="/customer-details/:categoryId" element={<CustomerDetailsForm />} />
+        {/*<Route path="/customer-details/:categoryId" element={<CustomerDetailsForm />} />*/}
         {/* Add more routes as needed */}
       </Routes>
       <Footer />

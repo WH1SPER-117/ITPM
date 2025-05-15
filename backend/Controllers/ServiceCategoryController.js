@@ -1,11 +1,21 @@
 const ServiceCategory = require("../Model/ServiceCategory");
 const PDFDocument = require('pdfkit');
-const fs = require('fs');
+const fs = require('fs').promises; // Use promises for async file operations
 
 // Create new category
 exports.createCategory = async (req, res) => {
   try {
-    const { categoryId, categoryName, services } = req.body;
+    const { categoryName } = req.body;
+
+    if (!categoryName || categoryName.trim() === "") {
+      return res.status(400).json({ error: "Category name is required" });
+    }
+
+    const existingCategory = await ServiceCategory.findOne({ categoryName });
+    if (existingCategory) {
+      return res.status(400).json({ error: "Category name already exists" });
+    }
+
     const category = new ServiceCategory({ categoryName });
     await category.save();
     res.status(201).json(category);
@@ -17,7 +27,7 @@ exports.createCategory = async (req, res) => {
 // Get all categories
 exports.getCategories = async (req, res) => {
   try {
-    const categories = await ServiceCategory.find();
+    const categories = await ServiceCategory.find().sort({ categoryName: 1 });
     res.status(200).json(categories);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -30,7 +40,11 @@ exports.addService = async (req, res) => {
     const { categoryId } = req.params;
     const { serviceName } = req.body;
 
-    const category = await ServiceCategory.findById(categoryId);
+    if (!serviceName || serviceName.trim() === "") {
+      return res.status(400).json({ error: "Service name is required" });
+    }
+
+    const category = await ServiceCategory.findOne({ categoryId });
     if (!category) return res.status(404).json({ error: "Category not found" });
 
     const duplicate = category.services.some(
@@ -38,7 +52,7 @@ exports.addService = async (req, res) => {
     );
     if (duplicate) return res.status(400).json({ error: "Service name already exists in this category." });
 
-    category.services.push({ serviceName }); // serviceId is auto-generated
+    category.services.push({ serviceName });
     await category.save();
 
     res.status(200).json(category);
@@ -47,12 +61,15 @@ exports.addService = async (req, res) => {
   }
 };
 
-
 // Update category name
 exports.updateCategory = async (req, res) => {
   try {
     const { categoryId } = req.params;
     const { categoryName } = req.body;
+
+    if (!categoryName || categoryName.trim() === "") {
+      return res.status(400).json({ error: "Category name is required" });
+    }
 
     const updated = await ServiceCategory.findOneAndUpdate(
       { categoryId },
@@ -76,7 +93,7 @@ exports.deleteCategory = async (req, res) => {
 
     if (!deleted) return res.status(404).json({ error: "Category not found" });
 
-    res.status(200).json({ message: "Category deleted" });
+    res.status(200).json({ message: "Category deleted", deletedCategory: deleted });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -88,11 +105,22 @@ exports.updateService = async (req, res) => {
     const { categoryId, serviceId } = req.params;
     const { serviceName } = req.body;
 
+    if (!serviceName || serviceName.trim() === "") {
+      return res.status(400).json({ error: "Service name is required" });
+    }
+
     const category = await ServiceCategory.findOne({ categoryId });
     if (!category) return res.status(404).json({ error: "Category not found" });
 
     const service = category.services.find(s => s.serviceId === serviceId);
     if (!service) return res.status(404).json({ error: "Service not found" });
+
+    const duplicate = category.services.some(
+      s => s.serviceId !== serviceId && s.serviceName.toLowerCase() === serviceName.toLowerCase()
+    );
+    if (duplicate) {
+      return res.status(400).json({ error: "Service name already exists in this category" });
+    }
 
     service.serviceName = serviceName;
     await category.save();
@@ -111,6 +139,11 @@ exports.deleteService = async (req, res) => {
 
     if (!category) return res.status(404).json({ error: "Category not found" });
 
+    const serviceExists = category.services.some(s => s.serviceId === serviceId);
+    if (!serviceExists) {
+      return res.status(404).json({ error: "Service not found" });
+    }
+
     category.services = category.services.filter(s => s.serviceId !== serviceId);
     await category.save();
 
@@ -118,15 +151,39 @@ exports.deleteService = async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-}; 
+};
 
-//Generate a downloadable pdf
+// Increment click count
+exports.incrementClickCount = async (req, res) => {
+  try {
+    const { categoryId } = req.params;
+
+    const category = await ServiceCategory.findOneAndUpdate(
+      { categoryId },
+      { $inc: { clickCount: 1 } },
+      { new: true }
+    );
+
+    if (!category) {
+      return res.status(404).json({ error: "Category not found" });
+    }
+
+    res.status(200).json(category);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Generate a downloadable PDF
 exports.generateReport = async (req, res) => {
   try {
     const categories = await ServiceCategory.find().sort({ clickCount: -1 });
 
     const doc = new PDFDocument();
-    const filename = 'Service_Popularity_Report.pdf';
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const filename = `Service_Popularity_Report_${timestamp}.pdf`;
+
+    await fs.mkdir('./reports', { recursive: true });
     const stream = fs.createWriteStream(`./reports/${filename}`);
     doc.pipe(stream);
 
@@ -138,7 +195,13 @@ exports.generateReport = async (req, res) => {
     doc.end();
 
     stream.on('finish', () => {
-      res.download(`./reports/${filename}`);
+      res.download(`./reports/${filename}`, (err) => {
+        if (err) {
+          console.error('Error sending file:', err);
+        }
+        // Optionally delete the file after download
+        // fs.unlink(`./reports/${filename}`).catch(err => console.error('Error deleting file:', err));
+      });
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
