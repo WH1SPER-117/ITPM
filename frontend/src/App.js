@@ -18,7 +18,7 @@ import {Routes, Route } from "react-router-dom"
 import Header from "./Components/Home/Header"
 import Home from "./Components/Home/Home"
 import Footer from "./Components/Home/Footer"
-import "./App.css"; 
+import "./App.css";
 
 //Service Category Routes
 import ServiceCategories from "./Components/ServiceCatalog/ServiceCategories"
